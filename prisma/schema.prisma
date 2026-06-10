@@ -1,0 +1,779 @@
+// MailPilot AI — Database Schema
+// PostgreSQL + Prisma ORM
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// ==========================================
+// ORGANIZATIONS / TEAMS (enterprise)
+// ==========================================
+
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  primaryDomain String?  @unique
+  // Billing
+  plan                 OrgPlan  @default(FREE)
+  planStatus           String?  // active, trialing, past_due, canceled
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String?
+  planRenewsAt         DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  users         User[]
+  emailAccounts EmailAccount[]
+  invites       OrgInvite[]
+  joinRequests  JoinRequest[]
+  domains       EmailDomain[]
+}
+
+enum OrgPlan {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MemberStatus {
+  ACTIVE
+  PENDING
+}
+
+model OrgInvite {
+  id             String       @id @default(cuid())
+  organizationId String
+  email          String
+  role           OrgRole      @default(MEMBER)
+  token          String       @unique
+  status         InviteStatus @default(PENDING)
+  invitedById    String?
+  createdAt      DateTime     @default(now())
+  expiresAt      DateTime
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+model JoinRequest {
+  id             String     @id @default(cuid())
+  organizationId String
+  userId         String
+  status         JoinStatus @default(PENDING)
+  createdAt      DateTime   @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+}
+
+enum JoinStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+// A sending domain claimed by an organization (used for domain-level stats and
+// for routing new signups with a matching work-email domain to a join request).
+model EmailDomain {
+  id             String   @id @default(cuid())
+  organizationId String
+  domain         String   @unique
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// AUTH & USER
+// ==========================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  image         String?
+  emailVerified DateTime?
+  organizationId String?
+  role           OrgRole      @default(OWNER)
+  memberStatus   MemberStatus @default(ACTIVE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  organization           Organization?  @relation(fields: [organizationId], references: [id])
+  accounts               Account[]
+  sessions               Session[]
+  llmConfig              LlmConfig?
+  companyProfile         CompanyProfile?
+  products               Product[]
+  emailAccounts          EmailAccount[]
+  assignedAccounts       EmailAccount[] @relation("AssignedMailboxes")
+  agents                 Agent[]
+  prospects              Prospect[]
+  prospectLists          ProspectList[]
+  globalSettings         GlobalSettings?
+  sidekickConversations  SidekickConversation[]
+  joinRequests           JoinRequest[]
+  apiTokens              ApiToken[]
+  oauthTokens            OAuthToken[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+
+// ==========================================
+// LLM CONFIGURATION
+// ==========================================
+
+model LlmConfig {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  apiBaseUrl String
+  apiKey     String   @db.Text
+  modelName  String?
+  isValid    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// COMPANY PROFILE
+// ==========================================
+
+model CompanyProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  companyName       String
+  website           String?
+  industry          String?
+  description       String?  @db.Text
+  valuePropositions String?  @db.Text
+  toneOfVoice       String?
+  targetMarkets     String?  @db.Text
+  rawScrapedData    String?  @db.Text
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// PRODUCTS
+// ==========================================
+
+model Product {
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  description    String?  @db.Text
+  price          String?
+  usps           String?  @db.Text
+  targetAudience String?  @db.Text
+  category       String?
+  tags           String?
+  sourceUrl     String?
+  imageUrl      String?
+  productFiles  String?  @db.Text
+  isActive      Boolean  @default(true)
+  // Ideal Customer Profile — either a free-form AI prompt or a structured
+  // Instantly-style "Super Search" filter (stored as JSON in icpFilters).
+  icpMode        ProductIcpMode @default(PROMPT)
+  icpPrompt      String?        @db.Text
+  icpFilters     String?        @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentProducts AgentProduct[]
+}
+
+enum ProductIcpMode {
+  PROMPT
+  FILTER
+}
+
+// ==========================================
+// EMAIL ACCOUNTS
+// ==========================================
+
+model EmailAccount {
+  id               String             @id @default(cuid())
+  userId           String
+  organizationId   String?
+  assignedToUserId String?
+  sharedWithOrg    Boolean            @default(true)
+  domain           String?            // derived sending domain, for domain-level stats
+  emailAddress     String
+  displayName      String?
+  provider         EmailProvider
+  resendApiKey     String?            @db.Text
+  gmailAppPassword String?            @db.Text
+  smtpHost         String?
+  smtpPort         Int?
+  smtpUsername     String?
+  smtpPassword     String?            @db.Text
+  smtpSecure       Boolean            @default(true)
+  imapHost         String?
+  imapPort         Int?
+  imapUsername     String?
+  imapPassword     String?            @db.Text
+  imapSecure       Boolean            @default(true)
+  imapEnabled      Boolean            @default(false)
+  lastSyncedAt     DateTime?
+  dailyLimit       Int                @default(50)
+  sentToday        Int                @default(0)
+  lastResetDate    DateTime           @default(now())
+  warmupEnabled    Boolean            @default(false)
+  warmupDailyMax   Int                @default(10)
+  warmupTag        String?
+  warmupSentToday  Int                @default(0)
+  warmupLastReset  DateTime           @default(now())
+  status           EmailAccountStatus @default(CONNECTED)
+  lastError        String?
+  isActive         Boolean            @default(true)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization  Organization?       @relation(fields: [organizationId], references: [id])
+  assignedTo    User?               @relation("AssignedMailboxes", fields: [assignedToUserId], references: [id])
+  agentAccounts AgentEmailAccount[]
+  emails        Email[]
+
+  @@index([organizationId])
+  @@index([domain])
+}
+
+enum EmailProvider {
+  RESEND
+  GMAIL
+  SMTP
+}
+
+enum EmailAccountStatus {
+  CONNECTED
+  ERROR
+  WARMING_UP
+  DISCONNECTED
+}
+
+// ==========================================
+// PROSPECTS
+// ==========================================
+
+model ProspectList {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  source      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prospects ProspectListEntry[]
+  agents    AgentProspectList[]
+}
+
+model Prospect {
+  id                String            @id @default(cuid())
+  userId            String
+  email             String
+  firstName         String?
+  lastName          String?
+  companyName       String?
+  jobTitle          String?
+  linkedinUrl       String?
+  phone             String?
+  website           String?
+  industry          String?
+  location          String?
+  timezone          String?           // IANA tz (e.g. "America/New_York") for local-window sending
+  customFields      String?           @db.Text
+  source            String?
+  isVerified        Boolean           @default(false)
+  isDnc             Boolean           @default(false)
+  bounceStatus      EmailBounceStatus @default(UNKNOWN) // ZeroBounce result
+  verificationScore Float?            // 0-10 quality score from provider
+  verifiedAt        DateTime?         // when verification was last run
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listEntries         ProspectListEntry[]
+  sequenceEnrollments SequenceEnrollment[]
+  emails              Email[]
+  preparedEmails      PreparedEmail[]
+
+  @@unique([userId, email])
+}
+
+model ProspectListEntry {
+  id             String @id @default(cuid())
+  prospectId     String
+  prospectListId String
+
+  prospect     Prospect     @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  prospectList ProspectList @relation(fields: [prospectListId], references: [id], onDelete: Cascade)
+
+  @@unique([prospectId, prospectListId])
+}
+
+// ==========================================
+// AI AGENTS
+// ==========================================
+
+model Agent {
+  id                  String       @id @default(cuid())
+  userId              String
+  name                String
+  description         String?
+  productMode         ProductMode
+  status              AgentStatus  @default(DRAFT)
+  guidelines          String?      @db.Text
+  systemPrompt        String?      @db.Text
+  sequenceMode        SequenceMode @default(AI_GENERATED)
+  staticSequence      String?      @db.Text
+  // Cadence + content for a multi-step sequence: JSON array of
+  // { waitDays:number, subject?:string, body?:string }. Index 0 = first touch.
+  sequenceSteps       String?      @db.Text
+  dailyEmailLimit     Int          @default(100)
+  sentToday           Int          @default(0)
+  lastResetDate       DateTime     @default(now())
+  minIntervalMinutes  Int          @default(1)
+  maxIntervalMinutes  Int          @default(5)
+  randomDelayMax      Int          @default(3)
+  scheduleTimezone    String       @default("UTC")
+  scheduleStartHour   Int          @default(9)
+  scheduleEndHour     Int          @default(17)
+  scheduleDays        String       @default("1,2,3,4,5")
+  scheduleStartDate   DateTime?
+  launchedAt          DateTime?    // when the agent was last launched into the background queue
+  trackOpens          Boolean      @default(false) // pixel tracking — disable for max deliverability
+  trackClicks         Boolean      @default(false)
+  includeUnsubscribe  Boolean      @default(true)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products      AgentProduct[]
+  emailAccounts AgentEmailAccount[]
+  prospectLists AgentProspectList[]
+  sequences     Sequence[]
+  emails        Email[]
+  preparedEmails PreparedEmail[]
+}
+
+enum ProductMode {
+  SINGLE
+  GROUP
+  ALL
+}
+
+enum AgentStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum SequenceMode {
+  AI_GENERATED
+  STATIC
+  HYBRID
+  EXTERNAL
+}
+
+// ==========================================
+// PRE-COMPUTED EMAILS (MCP / bring-your-own-Claude)
+// ==========================================
+// Per-prospect email content prepared OUTSIDE the platform (e.g. written by the
+// user's own Claude over MCP) and pushed in bulk. The worker sends these
+// verbatim with NO platform LLM call — enabling AI marketing at scale with zero
+// platform/API token cost.
+
+model PreparedEmail {
+  id         String              @id @default(cuid())
+  agentId    String
+  prospectId String
+  step       Int                 @default(0)
+  subject    String
+  body       String              @db.Text
+  status     PreparedEmailStatus @default(PENDING)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  agent    Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, prospectId, step])
+  @@index([agentId])
+}
+
+enum PreparedEmailStatus {
+  PENDING
+  SENT
+}
+
+model AgentProduct {
+  id        String @id @default(cuid())
+  agentId   String
+  productId String
+
+  agent   Agent   @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, productId])
+}
+
+model AgentEmailAccount {
+  id             String @id @default(cuid())
+  agentId        String
+  emailAccountId String
+
+  agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  emailAccount EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, emailAccountId])
+}
+
+model AgentProspectList {
+  id             String @id @default(cuid())
+  agentId        String
+  prospectListId String
+
+  agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  prospectList ProspectList @relation(fields: [prospectListId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, prospectListId])
+}
+
+// ==========================================
+// SEQUENCES & EMAILS
+// ==========================================
+
+model Sequence {
+  id        String   @id @default(cuid())
+  agentId   String
+  name      String
+  steps     String   @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agent       Agent                @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  enrollments SequenceEnrollment[]
+}
+
+model SequenceEnrollment {
+  id          String           @id @default(cuid())
+  sequenceId  String
+  prospectId  String
+  currentStep Int              @default(0)
+  status      EnrollmentStatus @default(ACTIVE)
+  nextSendAt  DateTime?
+  completedAt DateTime?
+  repliedAt   DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  sequence Sequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+  prospect Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
+  @@unique([sequenceId, prospectId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  REPLIED
+  PAUSED
+  BOUNCED
+  FAILED
+}
+
+model Email {
+  id             String         @id @default(cuid())
+  agentId        String?
+  emailAccountId String
+  prospectId     String?
+  fromEmail      String
+  toEmail        String
+  subject        String
+  body           String         @db.Text
+  bodyHtml       String?        @db.Text
+  direction      EmailDirection
+  status         EmailStatus    @default(QUEUED)
+  messageId      String?
+  inReplyTo      String?
+  threadId       String?
+  openedAt       DateTime?
+  clickedAt      DateTime?
+  bouncedAt      DateTime?
+  repliedAt      DateTime?
+  replyCategory  ReplyCategory?
+  isWarmup       Boolean        @default(false)
+  variantId      String?        // A/B variant label for this send (e.g. "A","B")
+  sequenceStep   Int?
+  sentAt         DateTime?
+  receivedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  agent        Agent?       @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  emailAccount EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+  prospect     Prospect?    @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+}
+
+enum EmailDirection {
+  SENT
+  RECEIVED
+}
+
+enum EmailStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  REPLIED
+  BOUNCED
+  FAILED
+}
+
+enum ReplyCategory {
+  INTERESTED
+  NOT_INTERESTED
+  OUT_OF_OFFICE
+  AUTO_REPLY
+  QUESTION
+  UNSUBSCRIBE
+  NEUTRAL
+}
+
+enum EmailBounceStatus {
+  UNKNOWN      // not yet checked
+  VALID        // inbox confirmed to exist
+  INVALID      // definitely does not exist
+  CATCH_ALL    // domain accepts all mail (risky)
+  DISPOSABLE   // temporary/throwaway address
+  SPAMTRAP     // known spam trap — never send
+}
+
+// ==========================================
+// GLOBAL LEAD DATABASE (shared B2B pool)
+// ==========================================
+// A platform-wide, searchable lead pool (e.g. imported LinkedIn Sales Navigator
+// exports). NOT user-scoped — every user can search it and copy matches into
+// their own prospect lists, like Apollo / Instantly Super Search.
+
+model GlobalLead {
+  id            String   @id @default(cuid())
+  email         String?
+  firstName     String?
+  lastName      String?
+  fullName      String?
+  jobTitle      String?
+  seniority     String?
+  department    String?
+  companyName   String?
+  companyDomain String?
+  industry      String?
+  headcount     String?  // bucket, e.g. "51-200"
+  employeeCount Int?
+  location      String?
+  country       String?
+  state         String?
+  city          String?
+  linkedinUrl   String?  @unique
+  phone         String?
+  keywords      String?  @db.Text
+  technologies  String?  @db.Text
+  source        String?  // e.g. "sales_navigator"
+  createdAt     DateTime @default(now())
+
+  @@index([jobTitle])
+  @@index([seniority])
+  @@index([department])
+  @@index([industry])
+  @@index([companyName])
+  @@index([country])
+  @@index([headcount])
+  @@index([email])
+}
+
+// ==========================================
+// API / MCP ACCESS TOKENS
+// ==========================================
+// Personal access tokens used to authenticate the MCP server (and any future
+// programmatic API). Only the SHA-256 hash is stored; the secret is shown once.
+
+model ApiToken {
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  tokenHash  String    @unique
+  prefix     String // first chars of the token for display (e.g. "mp_live_ab12")
+  scopes     String    @default("read,write")
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// OAuth 2.1 (MCP Authorization) — lets Claude connect as a one-click custom
+// connector without the user pasting a token. Public clients + PKCE.
+
+model OAuthClient {
+  id           String   @id @default(cuid()) // client_id
+  name         String?
+  redirectUris String   @db.Text // JSON array of allowed redirect URIs
+  createdAt    DateTime @default(now())
+}
+
+model OAuthAuthCode {
+  code          String   @id
+  clientId      String
+  userId        String
+  redirectUri   String
+  codeChallenge String?
+  scope         String   @default("read,write")
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+}
+
+model OAuthToken {
+  id               String   @id @default(cuid())
+  accessTokenHash  String   @unique
+  refreshTokenHash String?  @unique
+  clientId         String
+  userId           String
+  scopes           String   @default("read,write")
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ==========================================
+// GLOBAL SETTINGS
+// ==========================================
+
+model GlobalSettings {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  dailyEmailLimit   Int      @default(500)
+  zeroBounceApiKey  String?  @db.Text  // Encrypted — third-party ZeroBounce API key
+  verifyOnImport    Boolean  @default(false) // Default verification preference
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// AI SIDEKICK
+// ==========================================
+
+model SidekickConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages SidekickMessage[]
+}
+
+model SidekickMessage {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           SidekickRole
+  content        String       @db.Text
+  toolCalls      String?      @db.Text
+  toolResults    String?      @db.Text
+  pageContext    String?
+  createdAt      DateTime     @default(now())
+
+  conversation SidekickConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+enum SidekickRole {
+  USER
+  ASSISTANT
+  TOOL
+}
