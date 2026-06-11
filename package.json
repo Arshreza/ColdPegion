@@ -6,7 +6,7 @@
     "dev": "next dev",
     "dev:full": "concurrently \"next dev\" \"tsx scripts/start-worker.ts\"",
     "worker": "tsx scripts/start-worker.ts",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
