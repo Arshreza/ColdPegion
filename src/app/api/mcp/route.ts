@@ -4,7 +4,7 @@ import { registerMcpResources, registerMcpPrompts } from "@/lib/mcp/extras";
 import { verifyApiToken } from "@/lib/mcp/tokens";
 import { verifyOAuthAccessToken } from "@/lib/mcp/oauth";
 
-// MailPilot AI as a remote MCP server. Authenticated with a Personal Access
+// ColdPigeon as a remote MCP server. Authenticated with a Personal Access
 // Token (Settings → API & MCP). Exposes the full platform tool registry so a
 // user's own Claude can run the product end-to-end.
 const baseHandler = createMcpHandler(

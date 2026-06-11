@@ -12,6 +12,7 @@ import { buildTrackedHtml } from "@/lib/email/tracking";
 import { getOrgPlanLimits } from "@/lib/billing/plans";
 import { makeUnsubToken } from "@/lib/unsubscribe";
 import { appUrl } from "@/lib/email/transactional";
+import { isSuppressed } from "@/lib/suppression";
 
 const connection = getRedisConnection();
 const QUEUE_NAME = "email-sending-queue";
@@ -126,6 +127,10 @@ export const initWorker = () => {
       if (prospect.isDnc) {
         console.log(`Prospect ${prospectId} is on DNC list. Skipping.`);
         return { skipped: "dnc" };
+      }
+      if (await isSuppressed(userId, prospect.email)) {
+        console.log(`Prospect ${prospectId} (${prospect.email}) is on the suppression list. Skipping.`);
+        return { skipped: "suppressed" };
       }
 
       // E. Resolve content. Pre-computed emails (pushed in bulk over MCP by the

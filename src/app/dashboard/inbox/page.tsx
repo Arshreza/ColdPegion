@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-import { Loader2, Mail, Bot, Inbox as InboxIcon, Send, Archive, Search, MoreVertical, Flame, RefreshCw, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { Loader2, Mail, Bot, Inbox as InboxIcon, Send, Archive, Search, MoreVertical, Flame, RefreshCw, ArrowDownLeft, ArrowUpRight, ChevronLeft, Copy, Ban, CheckCircle2, Play } from "lucide-react";
 
 export default function UnifiedInboxPage() {
   const [loading, setLoading] = useState(true);
@@ -12,7 +13,176 @@ export default function UnifiedInboxPage() {
   const [emails, setEmails] = useState<any[]>([]);
   const [activeEmail, setActiveEmail] = useState<any | null>(null);
   const [replyText, setReplyText] = useState("");
-  const [notice, setNotice] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [pausing, setPausing] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  async function handleToggleAgent() {
+    if (!activeEmail?.agentId) return;
+    const agentId = activeEmail.agentId;
+    const currentStatus = activeEmail.agentStatus;
+    const isActive = currentStatus === "ACTIVE";
+    const nextStatus = isActive ? "PAUSED" : "ACTIVE";
+
+    setPausing(true);
+
+    setActiveEmail((prev: any) => {
+      if (!prev) return null;
+      return { ...prev, agentStatus: nextStatus };
+    });
+
+    setEmails((prev) =>
+      prev.map((e) =>
+        e.agentId === agentId ? { ...e, agentStatus: nextStatus } : e
+      )
+    );
+
+    try {
+      const res = await fetch(`/api/agents/${agentId}/queue`, {
+        method: isActive ? "DELETE" : "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update agent");
+      toast.success(isActive ? "AI Agent paused." : "AI Agent sequence resumed!");
+    } catch (e: any) {
+      setActiveEmail((prev: any) => {
+        if (!prev) return null;
+        return { ...prev, agentStatus: currentStatus };
+      });
+      setEmails((prev) =>
+        prev.map((e) =>
+          e.agentId === agentId ? { ...e, agentStatus: currentStatus } : e
+        )
+      );
+      toast.error(e.message || "Failed to update agent");
+    } finally {
+      setPausing(false);
+    }
+  }
+
+  useEffect(() => {
+    setIsDropdownOpen(false);
+  }, [activeEmail]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  function handleCopyEmail() {
+    if (!activeEmail?.prospect?.email) return;
+    navigator.clipboard.writeText(activeEmail.prospect.email)
+      .then(() => toast.success("Email address copied to clipboard"))
+      .catch(() => toast.error("Failed to copy email address"));
+    setIsDropdownOpen(false);
+  }
+
+  function handleCopyBody() {
+    if (!activeEmail?.body) return;
+    navigator.clipboard.writeText(activeEmail.body)
+      .then(() => toast.success("Email content copied to clipboard"))
+      .catch(() => toast.error("Failed to copy email content"));
+    setIsDropdownOpen(false);
+  }
+
+  async function handleToggleDnc() {
+    if (!activeEmail?.prospect?.email) return;
+    const prospectId = activeEmail.prospect.id;
+    const emailAddress = activeEmail.prospect.email;
+    const currentIsDnc = activeEmail.prospect.isDnc;
+    const next = !currentIsDnc;
+
+    setActiveEmail((prev: any) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        prospect: {
+          ...prev.prospect,
+          isDnc: next
+        }
+      };
+    });
+
+    setEmails((prev) =>
+      prev.map((e) =>
+        e.prospect.email === emailAddress
+          ? { ...e, prospect: { ...e.prospect, isDnc: next } }
+          : e
+      )
+    );
+
+    setIsDropdownOpen(false);
+
+    try {
+      let res;
+      if (prospectId) {
+        res = await fetch(`/api/prospects/${prospectId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isDnc: next }),
+        });
+      } else {
+        res = await fetch("/api/prospects/block", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailAddress, isDnc: next }),
+        });
+      }
+
+      if (!res.ok) throw new Error();
+      const updatedData = await res.json();
+
+      if (!prospectId && updatedData.id) {
+        setActiveEmail((prev: any) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            prospect: {
+              ...prev.prospect,
+              id: updatedData.id
+            }
+          };
+        });
+        setEmails((prev) =>
+          prev.map((e) =>
+            e.prospect.email === emailAddress
+              ? { ...e, prospect: { ...e.prospect, id: updatedData.id } }
+              : e
+          )
+        );
+      }
+
+      toast.success(next ? "Prospect added to Do-Not-Contact list" : "Prospect removed from Do-Not-Contact list");
+    } catch {
+      setActiveEmail((prev: any) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          prospect: {
+            ...prev.prospect,
+            isDnc: currentIsDnc
+          }
+        };
+      });
+      setEmails((prev) =>
+        prev.map((e) =>
+          e.prospect.email === emailAddress
+            ? { ...e, prospect: { ...e.prospect, isDnc: currentIsDnc } }
+            : e
+        )
+      );
+      toast.error("Failed to update DNC status");
+    }
+  }
 
   async function fetchInbox() {
     try {
@@ -35,14 +205,17 @@ export default function UnifiedInboxPage() {
 
   async function handleSync() {
     setSyncing(true);
-    setNotice(null);
     try {
       const res = await fetch("/api/inbox/sync", { method: "POST" });
       const data = await res.json();
-      setNotice(res.ok ? data.message : data.error || "Sync failed");
-      if (res.ok) await fetchInbox();
+      if (res.ok) {
+        toast.success(data.message || "Inbox synchronized");
+        await fetchInbox();
+      } else {
+        toast.error(data.error || "Sync failed");
+      }
     } catch (e) {
-      setNotice("Sync failed");
+      toast.error("Sync failed");
     } finally {
       setSyncing(false);
     }
@@ -51,7 +224,6 @@ export default function UnifiedInboxPage() {
   async function handleSendReply() {
     if (!activeEmail || !replyText.trim()) return;
     setSending(true);
-    setNotice(null);
     try {
       const res = await fetch("/api/inbox/reply", {
         method: "POST",
@@ -61,10 +233,10 @@ export default function UnifiedInboxPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send");
       setReplyText("");
-      setNotice("Reply sent. Sequence paused for this prospect.");
+      toast.success("Reply sent. Sequence paused for this prospect.");
       await fetchInbox();
     } catch (e: any) {
-      setNotice(e.message);
+      toast.error(e.message || "Failed to send reply");
     } finally {
       setSending(false);
     }
@@ -96,7 +268,7 @@ export default function UnifiedInboxPage() {
     <div className="h-[calc(100vh-8rem)] min-h-[600px] bg-background border border-border rounded-xl shadow-sm flex overflow-hidden animate-fade-in">
       
       {/* Left Pane - List of threads */}
-      <div className="w-1/3 min-w-[300px] max-w-[400px] border-r border-border flex flex-col bg-background-tertiary">
+      <div className={`w-full lg:w-1/3 lg:min-w-[300px] lg:max-w-[400px] border-r border-border flex-col bg-background-tertiary ${activeEmail ? "hidden lg:flex" : "flex"}`}>
          <div className="p-4 border-b border-border bg-background">
             <div className="flex items-center justify-between">
                <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
@@ -108,7 +280,6 @@ export default function UnifiedInboxPage() {
                   <span className="ml-1.5 hidden sm:inline">Sync</span>
                </Button>
             </div>
-            {notice && <p className="text-xs text-foreground-muted mt-2">{notice}</p>}
             <div className="relative mt-4">
                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-foreground-muted" />
                <Input placeholder="Search emails, prospects..." className="pl-9 h-9" />
@@ -157,9 +328,9 @@ export default function UnifiedInboxPage() {
       </div>
 
       {/* Right Pane - Thread view */}
-      <div className="flex-1 flex flex-col bg-background relative">
+      <div className={`flex-1 flex-col bg-background relative ${activeEmail ? "flex" : "hidden lg:flex"}`}>
          {!activeEmail ? (
-            <div className="hidden md:flex flex-col items-center justify-center h-full text-center p-12 bg-background-tertiary/20">
+            <div className="hidden lg:flex flex-col items-center justify-center h-full text-center p-12 bg-background-tertiary/20">
                <Bot className="h-16 w-16 text-foreground-muted/30 mb-4" />
                <h3 className="text-lg font-medium text-foreground">Select a conversation</h3>
                <p className="text-sm text-foreground-muted mt-2 max-w-md">
@@ -169,25 +340,105 @@ export default function UnifiedInboxPage() {
          ) : (
             <>
                <div className="p-4 border-b border-border bg-background flex justify-between items-center shadow-sm z-10">
-                  <div>
-                     <h2 className="font-semibold text-lg">{activeEmail.subject}</h2>
-                     <p className="text-sm text-foreground-muted flex items-center gap-2 mt-1">
-                        <span className="bg-brand-50 text-brand-700 px-1.5 py-0.5 rounded text-xs border border-brand-200 dark:bg-brand-500/10 dark:text-brand-400">Agent: {activeEmail.agentName}</span>
-                        <span>{activeEmail.senderAccount} &rarr; {activeEmail.prospect.email}</span>
-                     </p>
+                  <div className="flex items-center gap-3">
+                     <Button
+                        variant="ghost"
+                        size="icon"
+                        className="lg:hidden h-8 w-8 text-foreground-muted"
+                        onClick={() => setActiveEmail(null)}
+                     >
+                        <ChevronLeft className="h-5 w-5" />
+                     </Button>
+                     <div>
+                        <h2 className="font-semibold text-lg line-clamp-1">{activeEmail.subject}</h2>
+                        <p className="text-sm text-foreground-muted flex items-center gap-2 mt-1">
+                           <span className="bg-brand-50 text-brand-700 px-1.5 py-0.5 rounded text-xs border border-brand-200 dark:bg-brand-500/10 dark:text-brand-400">Agent: {activeEmail.agentName}</span>
+                           <span className="hidden sm:inline">{activeEmail.senderAccount} &rarr; {activeEmail.prospect.email}</span>
+                        </p>
+                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                     <Button variant="outline" size="sm" className="hidden sm:flex hover:bg-warning-50 hover:text-warning-600 hover:border-warning-200">
-                        <Archive className="mr-2 w-4 h-4" /> Pause Agent
-                     </Button>
-                     <Button variant="ghost" size="icon">
-                        <MoreVertical className="w-4 h-4 text-foreground-muted" />
-                     </Button>
+                  <div className="flex items-center gap-2 relative">
+                      {activeEmail.agentId ? (
+                         (activeEmail.agentStatus === "ACTIVE" || activeEmail.agentStatus === "PAUSED") && (
+                            <Button 
+                               variant="outline" 
+                               size="sm" 
+                               disabled={pausing}
+                               onClick={handleToggleAgent}
+                               className={activeEmail.agentStatus === "ACTIVE" 
+                                 ? "hidden sm:flex hover:bg-warning-50 hover:text-warning-600 hover:border-warning-200"
+                                 : "hidden sm:flex hover:bg-success-50 hover:text-success-600 hover:border-success-200"}
+                            >
+                               {pausing ? (
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                               ) : activeEmail.agentStatus === "ACTIVE" ? (
+                                  <Archive className="mr-2 h-4 w-4" />
+                               ) : (
+                                  <Play className="mr-2 h-4 w-4 text-success-500" />
+                               )}
+                               {activeEmail.agentStatus === "ACTIVE" ? "Pause Agent" : "Resume Agent"}
+                            </Button>
+                         )
+                      ) : (
+                          <Button 
+                             variant="outline" 
+                             size="sm" 
+                             onClick={() => toast.warning("Manual thread: there is no active AI agent sequence to pause.")}
+                             className="hidden sm:flex hover:bg-warning-50 hover:text-warning-600 hover:border-warning-200"
+                          >
+                             <Archive className="mr-2 w-4 h-4" /> Pause Agent
+                          </Button>
+                      )}
+                     <div ref={dropdownRef} className="relative">
+                        <Button
+                           variant="ghost"
+                           size="icon"
+                           onClick={() => setIsDropdownOpen((o) => !o)}
+                        >
+                           <MoreVertical className="w-4 h-4 text-foreground-muted" />
+                        </Button>
+                        {isDropdownOpen && (
+                           <div className="absolute right-0 mt-2 w-48 rounded-md border border-border bg-background shadow-lg z-[1000] p-1 animate-fade-in">
+                               <button
+                                 onClick={handleCopyEmail}
+                                 className="w-full text-left px-3 py-2 text-xs rounded hover:bg-background-tertiary flex items-center gap-2 text-foreground cursor-pointer"
+                              >
+                                 <Copy className="h-3.5 w-3.5 text-foreground-muted" />
+                                 Copy email address
+                              </button>
+                              <button
+                                 onClick={handleCopyBody}
+                                 className="w-full text-left px-3 py-2 text-xs rounded hover:bg-background-tertiary flex items-center gap-2 text-foreground cursor-pointer"
+                              >
+                                 <Copy className="h-3.5 w-3.5 text-foreground-muted" />
+                                 Copy email body
+                              </button>
+                              {activeEmail.prospect.email && (
+                                 <button
+                                    onClick={handleToggleDnc}
+                                    className="w-full text-left px-3 py-2 text-xs rounded hover:bg-background-tertiary flex items-center gap-2 text-foreground cursor-pointer"
+                                 >
+                                    {activeEmail.prospect.isDnc ? (
+                                       <>
+                                          <CheckCircle2 className="h-3.5 w-3.5 text-success-500" />
+                                          Unblock contact
+                                       </>
+                                    ) : (
+                                       <>
+                                          <Ban className="h-3.5 w-3.5 text-error-500" />
+                                          Block contact (DNC)
+                                       </>
+                                    )}
+                                 </button>
+                              )}
+                           </div>
+                        )}
+                     </div>
                   </div>
                </div>
                
                <div className="flex-1 overflow-y-auto p-6 bg-background-tertiary">
-                  <div className="bg-background border border-border rounded-xl p-5 shadow-sm max-w-3xl mx-auto mb-6 relative">
+                  <div className="bg-background border border-border rounded-xl p-5 shadow-sm w-full max-w-3xl mx-auto mb-6 relative">
                      <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
                            <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-lg">
@@ -200,7 +451,7 @@ export default function UnifiedInboxPage() {
                         </div>
                         <span className="text-xs text-foreground-muted">{new Date(activeEmail.date).toLocaleDateString()} at {new Date(activeEmail.date).toLocaleTimeString()}</span>
                      </div>
-                     <div className="text-sm text-foreground space-y-4 whitespace-pre-wrap leading-relaxed">
+                      <div className="text-sm text-foreground space-y-4 whitespace-pre-wrap break-words leading-relaxed">
                         {activeEmail.body}
                      </div>
                   </div>

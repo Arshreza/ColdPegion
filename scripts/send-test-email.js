@@ -16,11 +16,11 @@ async function sendTestEmail() {
   const info = await transporter.sendMail({
     from: '"Mohammed Taqi — SN Ship Spares" <mohammed.taqi@snshipspares.com>',
     to: "vazirmarine@gmail.com",
-    subject: "MailPilot AI — First Live Email 🚀",
+    subject: "ColdPigeon — First Live Email 🚀",
     text: [
       "Hi there,",
       "",
-      "This is the very first email sent by MailPilot AI from our local development environment.",
+      "This is the very first email sent by ColdPigeon from our local development environment.",
       "",
       "If you're reading this, it means the entire email pipeline is working:",
       "  ✓ Gmail SMTP authenticated successfully",
@@ -34,7 +34,7 @@ async function sendTestEmail() {
       "SN Ship Spares",
       "",
       "---",
-      "Sent via MailPilot AI v0.1.0",
+      "Sent via ColdPigeon v0.1.0",
     ].join("\n"),
   });
 

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { scheduleEmailJob } from "@/lib/queue/worker";
 import { computeSendTimes } from "@/lib/queue/schedule";
 import { buildBalancedAssignments } from "@/lib/queue/balancer";
+import { findSuppressedEmails } from "@/lib/suppression";
 
 function sameUtcDay(a: Date, b: Date): boolean {
   return (
@@ -40,16 +41,19 @@ export async function launchAgentCampaign(agentId: string, userId: string): Prom
     await db.agent.update({ where: { id: agentId }, data: { sentToday: 0, lastResetDate: today } });
   }
 
-  const prospects = await db.prospect.findMany({
+  const candidates = await db.prospect.findMany({
     where: {
       userId,
       isDnc: false,
       listEntries: { some: { prospectListId: { in: listIds } } },
       emails: { none: { agentId } },
     },
-    select: { id: true },
+    select: { id: true, email: true },
     take: 1000,
   });
+  // Drop anyone on the global suppression list (email or whole domain).
+  const suppressed = await findSuppressedEmails(userId, candidates.map((p) => p.email));
+  const prospects = candidates.filter((p) => !suppressed.has(p.email.trim().toLowerCase()));
 
   await db.agent.update({ where: { id: agentId }, data: { status: "ACTIVE", launchedAt: today } });
 

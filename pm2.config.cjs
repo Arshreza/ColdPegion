@@ -8,8 +8,8 @@
  *   pm2 startup       # generate systemd/init.d hook
  *
  * Two processes run side-by-side sharing the same Redis and Postgres:
- *   - mailpilot-web    → Next.js server  (npm run start)
- *   - mailpilot-worker → BullMQ worker   (npm run worker)
+ *   - coldpigeon-web    → Next.js server  (npm run start)
+ *   - coldpigeon-worker → BullMQ worker   (npm run worker)
  *
  * The worker MUST be running for campaigns to send. If it crashes PM2
  * will restart it automatically (max 10 times, then exponential backoff).
@@ -17,7 +17,7 @@
 module.exports = {
   apps: [
     {
-      name: "mailpilot-web",
+      name: "coldpigeon-web",
       script: "node_modules/.bin/next",
       args: "start",
       instances: 1,
@@ -30,7 +30,7 @@ module.exports = {
       },
     },
     {
-      name: "mailpilot-worker",
+      name: "coldpigeon-worker",
       script: "node_modules/.bin/tsx",
       args: "scripts/start-worker.ts",
       instances: 1,

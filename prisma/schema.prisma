@@ -1,4 +1,4 @@
-// MailPilot AI — Database Schema
+// ColdPigeon — Database Schema
 // PostgreSQL + Prisma ORM
 
 generator client {
@@ -138,6 +138,7 @@ model User {
   joinRequests           JoinRequest[]
   apiTokens              ApiToken[]
   oauthTokens            OAuthToken[]
+  suppressions           SuppressionEntry[]
 }
 
 model Account {
@@ -629,6 +630,28 @@ enum EmailBounceStatus {
 }
 
 // ==========================================
+// SUPPRESSION LIST (global do-not-email)
+// ==========================================
+// A user-scoped "never email these" list for compliance (past unsubscribes,
+// legal opt-outs, customers, competitors). Entries are either a full email
+// address ("a@b.com") or a whole domain stored as "@b.com". Enforced at
+// campaign launch (enrollment) AND in the worker right before every send —
+// independent of whether the address exists as a Prospect.
+
+model SuppressionEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  value     String   // lowercased email ("a@b.com") or domain ("@b.com")
+  reason    String?  // e.g. "upload", "manual", "sidekick"
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, value])
+  @@index([userId])
+}
+
+// ==========================================
 // GLOBAL LEAD DATABASE (shared B2B pool)
 // ==========================================
 // A platform-wide, searchable lead pool (e.g. imported LinkedIn Sales Navigator
@@ -681,7 +704,7 @@ model ApiToken {
   userId     String
   name       String
   tokenHash  String    @unique
-  prefix     String // first chars of the token for display (e.g. "mp_live_ab12")
+  prefix     String // first chars of the token for display (e.g. "cp_live_ab12")
   scopes     String    @default("read,write")
   lastUsedAt DateTime?
   revokedAt  DateTime?

@@ -164,7 +164,7 @@ export async function POST(request: Request) {
         },
         joinPending,
         message: joinPending
-          ? "Your company is already on MailPilot. An admin must approve your request to join."
+          ? "Your company is already on ColdPigeon. An admin must approve your request to join."
           : undefined,
       },
       { status: 201 }

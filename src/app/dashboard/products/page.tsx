@@ -253,11 +253,11 @@ export default function ProductsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Product Name *</Label>
-                <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. MailPilot Pro" required />
+                <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. ColdPigeon Pro" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="sourceUrl">Landing Page URL</Label>
-                <Input id="sourceUrl" type="url" value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="https://acme.com/mailpilot-pro" />
+                <Input id="sourceUrl" type="url" value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="https://acme.com/coldpigeon-pro" />
               </div>
             </div>
 

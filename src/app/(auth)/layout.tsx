@@ -25,14 +25,15 @@ export default function AuthLayout({
                   strokeWidth={1.5}
                   stroke="currentColor"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7h.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m20 7 2 .5-2 .5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 18v3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 17.75V21" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 18a6 6 0 0 0 3.84-10.61" />
                 </svg>
               </div>
-              <span className="text-2xl font-bold tracking-tight">MailPilot AI</span>
+              <span className="text-2xl font-bold tracking-tight">ColdPigeon</span>
             </div>
             <h1 className="text-4xl font-bold leading-tight mb-4">
               Automate your email outreach with AI agents

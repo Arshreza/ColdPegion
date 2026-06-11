@@ -7,6 +7,8 @@ import { launchAgentCampaign, pauseAgentCampaign } from "@/lib/agents/launch";
 import { searchApolloPeople, isApolloConfigured } from "@/lib/prospecting/apollo";
 import { generateGuidelines, generateSequence } from "@/lib/llm/author";
 import { isAdminRole } from "@/lib/org";
+import { guides, getGuide, searchGuides, guideToMarkdown } from "@/lib/docs/guides";
+import { addSuppressions } from "@/lib/suppression";
 
 export interface SidekickContext {
   userId: string;
@@ -539,6 +541,15 @@ export function buildSidekickTools(ctx: SidekickContext) {
       },
     }),
 
+    add_suppressions: tool({
+      description:
+        "Add email addresses or whole domains (e.g. 'acme.com') to the global suppression list. Suppressed addresses are NEVER emailed by any campaign, even if imported as prospects later — use for compliance opt-outs, customers, competitors.",
+      inputSchema: z.object({
+        values: z.array(z.string()).min(1).max(500).describe("Emails ('a@b.com') and/or domains ('b.com' or '@b.com')"),
+      }),
+      execute: async ({ values }) => addSuppressions(userId, values, "sidekick"),
+    }),
+
     clone_agent: tool({
       description: "Duplicate an existing agent's configuration as a new DRAFT.",
       inputSchema: z.object({ idOrName: z.string() }),
@@ -684,11 +695,38 @@ export function buildSidekickTools(ctx: SidekickContext) {
     }),
 
     start_welcome_tour: tool({
-      description: "Start or restart the interactive welcome onboarding tour for the user to guide them on setting up and navigating the MailPilot platform (Company Profile, Connect Email, Create Product, Launch First Agent).",
+      description: "Start or restart the interactive welcome onboarding tour for the user to guide them on setting up and navigating the ColdPigeon platform (Company Profile, Connect Email, Create Product, Launch First Agent).",
       inputSchema: z.object({}).optional(),
       execute: async () => {
         return { success: true, message: "Welcome tour triggered. The user is now presented with the interactive tour dialog." };
       }
+    }),
+
+    // ---------- HELP DOCS ----------
+    list_help_topics: tool({
+      description:
+        "List all ColdPigeon help guides (slug, title, description, category). Use this to discover which guide answers a how-to or product question.",
+      inputSchema: z.object({}),
+      execute: async () => ({
+        guides: guides.map((g) => ({ slug: g.slug, title: g.title, description: g.description, category: g.category })),
+      }),
+    }),
+
+    get_help_guide: tool({
+      description:
+        "Get the full content of a ColdPigeon help guide. Pass an exact slug (from list_help_topics) or a free-text question (e.g. 'how do I connect gmail') and the best-matching guides are returned as markdown. ALWAYS use this to answer how-to, setup, billing, deliverability, or troubleshooting questions instead of guessing.",
+      inputSchema: z.object({
+        slugOrQuery: z.string().describe("A guide slug, or a free-text question to search for"),
+      }),
+      execute: async ({ slugOrQuery }: { slugOrQuery: string }) => {
+        const exact = getGuide(slugOrQuery.trim().toLowerCase());
+        if (exact) return { guides: [{ slug: exact.slug, content: guideToMarkdown(exact) }] };
+        const matches = searchGuides(slugOrQuery, 2);
+        if (matches.length === 0) {
+          return { guides: [], hint: "No matching guide. Call list_help_topics to see everything available." };
+        }
+        return { guides: matches.map((g) => ({ slug: g.slug, content: guideToMarkdown(g) })) };
+      },
     }),
   };
 }

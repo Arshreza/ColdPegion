@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
 
-const PREFIX = "mp_live_";
+const PREFIX = "cp_live_";
 
 export function hashToken(token: string): string {
   return crypto.createHash("sha256").update(token).digest("hex");

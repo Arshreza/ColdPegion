@@ -1,6 +1,6 @@
-# MailPilot AI — Email Marketing Automation Platform
+# ColdPigeon — Email Marketing Automation Platform
 
-Welcome to **MailPilot AI**, an advanced email automation dashboard powered by Next.js, Prisma ORM, BullMQ, and LLM integrations. This platform allows you to create AI-driven sales agents that generate highly personalized cold outreach emails based on your product specs, target prospect profiles, and custom rules, sending them directly via verified SMTP accounts.
+Welcome to **ColdPigeon**, an advanced email automation dashboard powered by Next.js, Prisma ORM, BullMQ, and LLM integrations. This platform allows you to create AI-driven sales agents that generate highly personalized cold outreach emails based on your product specs, target prospect profiles, and custom rules, sending them directly via verified SMTP accounts.
 
 This guide is designed to help junior developers set up the project locally from scratch.
 
@@ -56,10 +56,10 @@ Create a file named `.env` in the root folder of the project. Copy the template 
 
 ```env
 # Database Connection (Raw URL used by Next.js & @prisma/adapter-pg)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/mailpilot_dev?sslmode=disable"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/coldpigeon_dev?sslmode=disable"
 
 # Database Connection for CLI Operations (Used for migrations)
-DATABASE_URL_UNPOOLED="postgresql://postgres:postgres@localhost:5432/mailpilot_dev"
+DATABASE_URL_UNPOOLED="postgresql://postgres:postgres@localhost:5432/coldpigeon_dev"
 
 # Authentication Config
 NEXTAUTH_SECRET="your_generated_32_character_nextauth_secret"
@@ -89,7 +89,7 @@ ENCRYPTION_MASTER_KEY="your_32_byte_hex_string"
 # Optional: System Transactional Emails (for automated invitations & request approvals)
 # Option A — Resend:
 # RESEND_API_KEY="re_your_api_key"
-# EMAIL_FROM="MailPilot <no-reply@yourdomain.com>"
+# EMAIL_FROM="ColdPigeon <no-reply@yourdomain.com>"
 
 # Option B — SMTP / SendGrid:
 # SMTP_HOST="smtp.sendgrid.net"
@@ -97,7 +97,7 @@ ENCRYPTION_MASTER_KEY="your_32_byte_hex_string"
 # SMTP_USER="apikey"
 # SMTP_PASSWORD="your-api-key"
 # SMTP_SECURE="false"   # set to true for SSL port 465
-# EMAIL_FROM="MailPilot <no-reply@yourdomain.com>"
+# EMAIL_FROM="ColdPigeon <no-reply@yourdomain.com>"
 ```
 
 > [!TIP]

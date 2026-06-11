@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { LogOut, Search, Sparkles } from "lucide-react";
+import { LogOut, Search, Sparkles, Menu } from "lucide-react";
 
 function openSidekick() {
   window.dispatchEvent(new Event("mp:open-sidekick"));
@@ -14,6 +14,16 @@ export function Topbar() {
   return (
     <header className="flex h-16 shrink-0 items-center gap-x-4 border-b border-border bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center">
+        {/* Mobile menu toggle button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden text-foreground-muted hover:bg-background-tertiary"
+          onClick={() => window.dispatchEvent(new Event("mp:toggle-sidebar"))}
+        >
+          <Menu className="h-6 w-6" />
+        </Button>
+
         {/* Ask-AI launcher (replaces the old non-functional search box) */}
         <button
           type="button"

@@ -33,10 +33,14 @@ export async function GET() {
       accountId: email.emailAccountId,
       counterpartyEmail: email.direction === "RECEIVED" ? email.fromEmail : email.toEmail,
       prospect: {
+        id: email.prospect?.id ?? null,
         name: email.prospect ? `${email.prospect.firstName ?? ""} ${email.prospect.lastName ?? ""}`.trim() : "Unknown",
         email: email.prospect?.email ?? (email.direction === "RECEIVED" ? email.fromEmail : email.toEmail),
         company: email.prospect?.companyName ?? null,
+        isDnc: email.prospect?.isDnc ?? false,
       },
+      agentId: email.agentId ?? null,
+      agentStatus: email.agent?.status ?? null,
       agentName: email.agent?.name ?? null,
       senderAccount: email.emailAccount.emailAddress,
     }));

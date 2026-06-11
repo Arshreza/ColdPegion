@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==========================================
-   MAILPILOT AI — DESIGN SYSTEM
+   COLDPIGEON — DESIGN SYSTEM
    ========================================== */
 
 :root {
@@ -23,7 +23,7 @@
 
   /* Success */
   --success-500: #22c55e;
-  --success-600: #16a34a;
+  --success-600: #15803d; /* green-700: ≥4.5:1 on light backgrounds (WCAG AA) */
 
   /* Warning */
   --warning-500: #f59e0b;
@@ -39,7 +39,7 @@
   --background-tertiary: #f1f5f9;
   --foreground: #0f172a;
   --foreground-secondary: #475569;
-  --foreground-muted: #94a3b8;
+  --foreground-muted: #64748b; /* slate-500: 4.76:1 on white (WCAG AA) */
   --border: #e2e8f0;
   --border-hover: #cbd5e1;
   --ring: #3b82f6;
@@ -73,7 +73,7 @@
     --background-tertiary: #1e293b;
     --foreground: #f8fafc;
     --foreground-secondary: #cbd5e1;
-    --foreground-muted: #64748b;
+    --foreground-muted: #94a3b8; /* slate-400: 7.1:1 on #020617 (WCAG AA) */
     --border: #1e293b;
     --border-hover: #334155;
     --ring: #60a5fa;
@@ -248,4 +248,222 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* ==========================================
+   MARKETING SITE UTILITIES
+   ========================================== */
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.bg-grid-fade {
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+.glow-brand {
+  box-shadow: 0 0 80px -12px rgb(59 130 246 / 0.35), 0 0 32px -8px rgb(139 92 246 / 0.25);
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float-soft {
+  animation: float-soft 5s ease-in-out infinite;
+}
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+.animate-blink-dot {
+  animation: blink-dot 1.6s ease-in-out infinite;
+}
+
+/* ---------- Scroll reveal ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* ---------- Aurora background ---------- */
+
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(70px, -50px) scale(1.18); }
+  66% { transform: translate(-60px, 40px) scale(0.92); }
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.4;
+  will-change: transform;
+  animation: aurora-drift 16s ease-in-out infinite;
+}
+
+/* ---------- Noise texture ---------- */
+
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* ---------- Marquee ---------- */
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+.marquee-pause:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* ---------- Orbit (connector solar system) ---------- */
+
+@keyframes orbit-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbit-spin-rev {
+  to { transform: rotate(-360deg); }
+}
+
+.orbit-ring {
+  animation: orbit-spin var(--orbit-duration, 28s) linear infinite;
+}
+
+.orbit-ring-rev {
+  animation: orbit-spin-rev var(--orbit-duration, 28s) linear infinite;
+}
+
+.orbit-counter {
+  animation: orbit-spin-rev var(--orbit-duration, 28s) linear infinite;
+}
+
+.orbit-counter-rev {
+  animation: orbit-spin var(--orbit-duration, 28s) linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* ---------- Gradient border ---------- */
+
+.border-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--background-secondary), var(--background-secondary)) padding-box,
+    linear-gradient(135deg, var(--brand-500), var(--accent-500)) border-box;
+}
+
+/* ---------- Button shine sweep ---------- */
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.35) 50%, transparent 60%);
+  transform: translateX(-150%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  transform: translateX(150%);
+}
+
+/* ---------- Spotlight card ---------- */
+
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(360px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgb(59 130 246 / 0.12), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* ---------- Animated gradient text ---------- */
+
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.gradient-text-animated {
+  background: linear-gradient(90deg, var(--brand-400), var(--accent-500), var(--brand-500), var(--accent-600), var(--brand-400));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-pan 6s ease-in-out infinite;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  .animate-marquee,
+  .orbit-ring,
+  .orbit-ring-rev,
+  .orbit-counter,
+  .orbit-counter-rev,
+  .animate-float-soft,
+  .animate-pulse-ring,
+  .gradient-text-animated {
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

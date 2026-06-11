@@ -56,7 +56,7 @@ export default async function VerifyEmailPage({ searchParams }: PageProps) {
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-foreground">Email verified!</h1>
             <p className="text-sm text-foreground-muted">
-              Thank you for verifying your email address. Your MailPilot AI account is now fully unlocked.
+              Thank you for verifying your email address. Your ColdPigeon account is now fully unlocked.
             </p>
           </div>
           <div className="pt-2">

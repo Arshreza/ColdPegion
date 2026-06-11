@@ -30,7 +30,7 @@ interface TourStep {
 
 const TOUR_STEPS: TourStep[] = [
   {
-    title: "Welcome to MailPilot AI! 🚀",
+    title: "Welcome to ColdPigeon! 🚀",
     description: "Let's set up your automated outreach system in 5 quick steps. We'll guide you through configuring your AI models, company profile, email accounts, products, and sequence agents.",
     path: "/dashboard",
     targetId: "",
@@ -38,7 +38,7 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     title: "Step 1: LLM Key Configuration 🔑",
-    description: "Configure your API keys. MailPilot AI requires an OpenAI-compatible API key (or Groq, open-source model base URLs) to generate personalized outbound emails, draft sequences, and categorize replies.",
+    description: "Configure your API keys. ColdPigeon requires an OpenAI-compatible API key (or Groq, open-source model base URLs) to generate personalized outbound emails, draft sequences, and categorize replies.",
     path: "/dashboard/settings",
     targetId: "onboarding-llm-config",
     instruction: "Enter your API Base URL, model name (e.g. gpt-4o), and API Key, then click 'Save LLM Config' to activate your AI engine."
@@ -52,7 +52,7 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     title: "Step 3: Connect Senders ✉️",
-    description: "Link your sending mailboxes. MailPilot supports Google Workspace/Gmail, Resend API key, and standard SMTP relays (SendGrid, Mailgun) to distribute your sending volume.",
+    description: "Link your sending mailboxes. ColdPigeon supports Google Workspace/Gmail, Resend API key, and standard SMTP relays (SendGrid, Mailgun) to distribute your sending volume.",
     path: "/dashboard/accounts",
     targetId: "onboarding-connect-email",
     instruction: "Click 'Connect Account' to link your first sender mailbox. The worker load-balances emails automatically."
@@ -91,9 +91,9 @@ export function OnboardingTour() {
   const getKeys = () => {
     const suffix = userId ? `_${userId}` : "";
     return {
-      completed: `mailpilot_tour_completed${suffix}`,
-      active: `mailpilot_tour_active${suffix}`,
-      step: `mailpilot_tour_step${suffix}`
+      completed: `coldpigeon_tour_completed${suffix}`,
+      active: `coldpigeon_tour_active${suffix}`,
+      step: `coldpigeon_tour_step${suffix}`
     };
   };
 
@@ -296,7 +296,7 @@ export function OnboardingTour() {
           </div>
 
           <h1 className="text-2xl font-bold tracking-tight text-foreground bg-gradient-to-r from-brand-400 to-accent-500 bg-clip-text text-transparent mb-3">
-            Welcome to MailPilot AI!
+            Welcome to ColdPigeon!
           </h1>
           <p className="text-foreground-secondary text-sm leading-relaxed mb-8">
             Let&apos;s get your cold outreach campaign configured in 5 quick steps. We&apos;ll walk you through setting up your AI models, company profile, email accounts, products, and sequence agents.

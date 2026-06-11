@@ -424,10 +424,10 @@ export default function ProspectsPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl animate-fade-in flex flex-col md:flex-row gap-6">
+    <div className="space-y-6 max-w-7xl animate-fade-in flex flex-col lg:flex-row gap-6">
       
       {/* Left Sidebar - Lists */}
-      <div className="w-full md:w-64 flex-shrink-0 space-y-4">
+      <div className="w-full lg:w-64 flex-shrink-0 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Target Lists</h2>
         
         <form onSubmit={handleCreateList} className="flex items-center gap-2">
@@ -482,7 +482,7 @@ export default function ProspectsPage() {
             </p>
           </div>
           
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <Input 
               type="file" 
               accept=".csv,.xlsx,.xls" 
@@ -508,7 +508,7 @@ export default function ProspectsPage() {
         {/* Column Mapping Modal */}
         {showMappingConfig && pendingFile && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm animate-fade-in p-4">
-            <div className="w-full max-w-2xl bg-background border border-border rounded-2xl shadow-2xl p-6 relative overflow-hidden space-y-5 animate-slide-up">
+            <div className="w-full max-w-2xl bg-background border border-border rounded-2xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto space-y-5 animate-slide-up">
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
                   <h3 className="font-bold text-foreground text-lg flex items-center gap-2">
@@ -724,17 +724,17 @@ export default function ProspectsPage() {
             <Loader2 className="h-8 w-8 animate-spin text-brand-500" />
           </div>
         ) : prospects.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border bg-background/50 p-12 text-center mt-4">
+          <div className="rounded-xl border border-dashed border-border bg-background/50 p-6 sm:p-12 text-center mt-4">
             <Users className="mx-auto h-12 w-12 text-foreground-muted/50 mb-4" />
             <h3 className="text-lg font-medium text-foreground">No prospects in this list</h3>
             <p className="mt-1 text-sm text-foreground-muted mb-6">
               Import a CSV file containing columns like "Email", "First Name", "Company".
             </p>
-            <div className="flex items-center justify-center gap-3">
-              <Button onClick={() => fileInputRef.current?.click()} disabled={!activeListId || uploading} variant="outline">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-xs mx-auto sm:max-w-none">
+              <Button onClick={() => fileInputRef.current?.click()} disabled={!activeListId || uploading} variant="outline" className="w-full sm:w-auto">
                 <Upload className="mr-2 h-4 w-4" /> Upload CSV
               </Button>
-              <Button onClick={() => setShowAddLead(true)} disabled={!activeListId}>
+              <Button onClick={() => setShowAddLead(true)} disabled={!activeListId} className="w-full sm:w-auto">
                 <Plus className="mr-2 h-4 w-4" /> Add Lead Manually
               </Button>
             </div>

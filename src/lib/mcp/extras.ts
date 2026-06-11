@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { computeMailboxStats, rollupByDomain } from "@/lib/stats/deliverability";
+import { guides, guideToMarkdown } from "@/lib/docs/guides";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyServer = any;
@@ -18,8 +19,27 @@ const asJson = (uri: string, data: unknown) => ({
 /** Phase 3 — read-only MCP resources so Claude can cheaply read live context. */
 export function registerMcpResources(server: AnyServer) {
   server.registerResource(
+    "docs",
+    "coldpigeon://docs",
+    {
+      title: "Help guides",
+      description: "All ColdPigeon how-to guides as markdown (setup, leads, agents, deliverability, Claude/MCP, billing, troubleshooting). Read this to answer product questions accurately.",
+      mimeType: "text/markdown",
+    },
+    async (uri: URL) => ({
+      contents: [
+        {
+          uri: uri.toString(),
+          mimeType: "text/markdown",
+          text: guides.map((g) => guideToMarkdown(g)).join("\n\n---\n\n"),
+        },
+      ],
+    })
+  );
+
+  server.registerResource(
     "overview",
-    "mailpilot://overview",
+    "coldpigeon://overview",
     { title: "Account overview", description: "Counts of agents, prospects, lists, products.", mimeType: "application/json" },
     async (uri: URL, extra: Extra) => {
       const userId = userIdOf(extra);
@@ -35,7 +55,7 @@ export function registerMcpResources(server: AnyServer) {
 
   server.registerResource(
     "deliverability",
-    "mailpilot://deliverability",
+    "coldpigeon://deliverability",
     { title: "Deliverability", description: "Per-mailbox and per-domain sending health.", mimeType: "application/json" },
     async (uri: URL, extra: Extra) => {
       const userId = userIdOf(extra);
@@ -47,7 +67,7 @@ export function registerMcpResources(server: AnyServer) {
 
   server.registerResource(
     "agents",
-    "mailpilot://agents",
+    "coldpigeon://agents",
     { title: "Agents", description: "Your AI agents and their status.", mimeType: "application/json" },
     async (uri: URL, extra: Extra) => {
       const userId = userIdOf(extra);
@@ -62,7 +82,7 @@ export function registerMcpResources(server: AnyServer) {
 
   server.registerResource(
     "lists",
-    "mailpilot://lists",
+    "coldpigeon://lists",
     { title: "Prospect lists", description: "Your lists with prospect counts.", mimeType: "application/json" },
     async (uri: URL, extra: Extra) => {
       const userId = userIdOf(extra);
@@ -94,7 +114,7 @@ export function registerMcpPrompts(server: AnyServer) {
           role: "user" as const,
           content: {
             type: "text" as const,
-            text: `Run a full cold-email campaign with the MailPilot tools, doing ALL copywriting yourself (no platform LLM):
+            text: `Run a full cold-email campaign with the ColdPigeon tools, doing ALL copywriting yourself (no platform LLM):
 1. Mine ${count || "50"} real leads with emails matching: ${icp} (use your other connectors — Apollo, web, LinkedIn).
 2. import_leads into a new list.
 3. Ensure a product exists (create_product if needed); create_agent targeting that list + a sender mailbox.
