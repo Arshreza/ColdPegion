@@ -78,7 +78,7 @@ async function main() {
     console.log("✓ Prospect already exists:", prospectRes.rows[0].id);
   }
 
-  console.log("\n✅ Done! Your real Gmail account is now registered in ColdPigeon.");
+  console.log("\n✅ Done! Your real Gmail account is now registered in ColdPegion.");
   await pool.end();
 }
 

@@ -1,7 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SalesModal } from "./sales-modal";
 
 // Display copy for the plans defined in src/lib/billing/plans.ts — keep limits in sync.
 const tiers = [
@@ -13,6 +17,7 @@ const tiers = [
     cta: "Start for free",
     href: "/register",
     highlight: false,
+    salesCta: false,
     features: [
       "50 emails / day",
       "1 connected mailbox",
@@ -30,6 +35,7 @@ const tiers = [
     cta: "Start with Starter",
     href: "/register",
     highlight: false,
+    salesCta: false,
     features: [
       "500 emails / day",
       "5 connected mailboxes",
@@ -47,6 +53,7 @@ const tiers = [
     cta: "Go Pro",
     href: "/register",
     highlight: true,
+    salesCta: false,
     features: [
       "5,000 emails / day",
       "25 connected mailboxes",
@@ -62,8 +69,9 @@ const tiers = [
     period: "",
     description: "Unlimited scale, SLAs, and white-glove onboarding.",
     cta: "Talk to sales",
-    href: "/register",
+    href: "#",
     highlight: false,
+    salesCta: true,
     features: [
       "Unlimited emails / day",
       "Unlimited mailboxes & seats",
@@ -76,44 +84,60 @@ const tiers = [
 ];
 
 export function PricingCards() {
+  const [showSalesModal, setShowSalesModal] = useState(false);
+
   return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {tiers.map((tier) => (
-        <div
-          key={tier.name}
-          className={cn(
-            "relative flex flex-col rounded-2xl border bg-background-secondary p-6 shadow-sm transition-shadow hover:shadow-lg",
-            tier.highlight ? "border-brand-500 glow-brand" : "border-border"
-          )}
-        >
-          {tier.highlight && (
-            <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full gradient-brand px-3 py-1 text-xs font-semibold text-white shadow-md">
-              <Sparkles className="h-3 w-3" /> Most popular
-            </span>
-          )}
-          <h3 className="text-lg font-bold text-foreground">{tier.name}</h3>
-          <div className="mt-2 flex items-baseline gap-1">
-            <span className="text-4xl font-extrabold tracking-tight text-foreground">{tier.price}</span>
-            <span className="text-sm text-foreground-muted">{tier.period}</span>
-          </div>
-          <p className="mt-2 text-sm text-foreground-secondary">{tier.description}</p>
-          <ul className="mt-6 flex-1 space-y-2.5">
-            {tier.features.map((f) => (
-              <li key={f} className="flex items-start gap-2 text-sm text-foreground-secondary">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-success-500" />
-                {f}
-              </li>
-            ))}
-          </ul>
-          <Button
-            asChild
-            className={cn("mt-6 w-full", tier.highlight && "btn-shine")}
-            variant={tier.highlight ? "default" : "outline"}
+    <>
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {tiers.map((tier) => (
+          <div
+            key={tier.name}
+            className={cn(
+              "relative flex flex-col rounded-2xl border bg-background-secondary p-6 shadow-sm transition-shadow hover:shadow-lg",
+              tier.highlight ? "border-brand-500 glow-brand" : "border-border"
+            )}
           >
-            <Link href={tier.href}>{tier.cta}</Link>
-          </Button>
-        </div>
-      ))}
-    </div>
+            {tier.highlight && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full gradient-brand px-3 py-1 text-xs font-semibold text-white shadow-md">
+                <Sparkles className="h-3 w-3" /> Most popular
+              </span>
+            )}
+            <h3 className="text-lg font-bold text-foreground">{tier.name}</h3>
+            <div className="mt-2 flex items-baseline gap-1">
+              <span className="text-4xl font-extrabold tracking-tight text-foreground">{tier.price}</span>
+              <span className="text-sm text-foreground-muted">{tier.period}</span>
+            </div>
+            <p className="mt-2 text-sm text-foreground-secondary">{tier.description}</p>
+            <ul className="mt-6 flex-1 space-y-2.5">
+              {tier.features.map((f) => (
+                <li key={f} className="flex items-start gap-2 text-sm text-foreground-secondary">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-success-500" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+            {tier.salesCta ? (
+              <Button
+                className={cn("mt-6 w-full")}
+                variant="outline"
+                onClick={() => setShowSalesModal(true)}
+              >
+                {tier.cta}
+              </Button>
+            ) : (
+              <Button
+                asChild
+                className={cn("mt-6 w-full", tier.highlight && "btn-shine")}
+                variant={tier.highlight ? "default" : "outline"}
+              >
+                <Link href={tier.href}>{tier.cta}</Link>
+              </Button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {showSalesModal && <SalesModal onClose={() => setShowSalesModal(false)} />}
+    </>
   );
 }

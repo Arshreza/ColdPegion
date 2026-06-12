@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, Users, Upload, FolderPlus, X, Ban, CheckCircle2, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Loader2, Plus, Users, Upload, FolderPlus, X, Ban, CheckCircle2, Plug } from "lucide-react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
@@ -164,7 +165,9 @@ function SearchableSelect({
 }
 
 export default function ProspectsPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [hasIntegrations, setHasIntegrations] = useState<boolean | null>(null);
   const [addingList, setAddingList] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showAddLead, setShowAddLead] = useState(false);
@@ -237,6 +240,12 @@ export default function ProspectsPage() {
 
   useEffect(() => {
     fetchLists();
+    fetch("/api/settings")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data) setHasIntegrations(data.hasApolloKey || data.hasInstantlyKey);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -483,15 +492,25 @@ export default function ProspectsPage() {
           </div>
           
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-            <Input 
-              type="file" 
-              accept=".csv,.xlsx,.xls" 
-              className="hidden" 
+            <Input
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              className="hidden"
               ref={fileInputRef}
               onChange={handleFileSelect}
             />
-            <Button 
-              variant="outline" 
+            {hasIntegrations === false && (
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard/settings#integrations")}
+                className="w-full sm:w-auto border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-900/20 dark:text-purple-300 dark:hover:bg-purple-900/40"
+              >
+                <Plug className="mr-2 h-4 w-4" />
+                Connect Apollo / Instantly
+              </Button>
+            )}
+            <Button
+              variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={!activeListId || uploading}
               className="w-full sm:w-auto text-brand-600 bg-brand-50 border-brand-200 hover:bg-brand-100"

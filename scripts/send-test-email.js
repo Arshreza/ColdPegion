@@ -16,11 +16,11 @@ async function sendTestEmail() {
   const info = await transporter.sendMail({
     from: '"Mohammed Taqi — SN Ship Spares" <mohammed.taqi@snshipspares.com>',
     to: "vazirmarine@gmail.com",
-    subject: "ColdPigeon — First Live Email 🚀",
+    subject: "ColdPegion — First Live Email 🚀",
     text: [
       "Hi there,",
       "",
-      "This is the very first email sent by ColdPigeon from our local development environment.",
+      "This is the very first email sent by ColdPegion from our local development environment.",
       "",
       "If you're reading this, it means the entire email pipeline is working:",
       "  ✓ Gmail SMTP authenticated successfully",
@@ -34,7 +34,7 @@ async function sendTestEmail() {
       "SN Ship Spares",
       "",
       "---",
-      "Sent via ColdPigeon v0.1.0",
+      "Sent via ColdPegion v0.1.0",
     ].join("\n"),
   });
 

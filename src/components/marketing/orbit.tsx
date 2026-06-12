@@ -50,14 +50,14 @@ export function Orbit() {
       <div className="absolute inset-[12%] rounded-full border border-dashed border-border" aria-hidden />
       <div className="absolute inset-[31%] rounded-full border border-dashed border-border" aria-hidden />
 
-      {/* center: Claude + ColdPigeon MCP */}
+      {/* center: Claude + ColdPegion MCP */}
       <div className="relative z-10 flex flex-col items-center">
         <span className="absolute inset-0 -z-10 rounded-2xl gradient-brand animate-pulse-ring" aria-hidden />
         <div className="flex flex-col items-center gap-1 rounded-2xl gradient-brand px-5 py-4 text-white shadow-xl glow-brand">
           <Sparkles className="h-6 w-6" />
           <span className="text-sm font-bold">Claude</span>
           <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide">
-            ColdPigeon MCP
+            ColdPegion MCP
           </span>
         </div>
       </div>

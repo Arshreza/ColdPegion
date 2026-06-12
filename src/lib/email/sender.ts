@@ -1,12 +1,11 @@
 import * as nodemailer from "nodemailer";
 import { Resend } from "resend";
-import { readFileSync, existsSync } from "fs";
 import { decrypt } from "@/lib/encryption";
 import type { EmailAccount } from "@prisma/client";
 
 export interface EmailAttachment {
   filename: string;
-  fsPath: string; // absolute filesystem path
+  content: Buffer; // loaded by the caller (storage may be local disk or S3)
 }
 
 export interface SendArgs {
@@ -70,7 +69,7 @@ export async function sendViaAccount(account: EmailAccount, args: SendArgs): Pro
   const fromName = account.displayName || account.emailAddress;
   const from = `"${fromName}" <${account.emailAddress}>`;
 
-  const validAttachments = (args.attachments || []).filter((a) => existsSync(a.fsPath));
+  const validAttachments = args.attachments || [];
 
   if (account.provider === "RESEND") {
     if (!account.resendApiKey) {
@@ -86,7 +85,7 @@ export async function sendViaAccount(account: EmailAccount, args: SendArgs): Pro
       ...(args.html ? { html: args.html } : {}),
       ...(Object.keys(mergedHeaders).length ? { headers: mergedHeaders } : {}),
       ...(validAttachments.length ? {
-        attachments: validAttachments.map((a) => ({ filename: a.filename, content: readFileSync(a.fsPath).toString("base64") })),
+        attachments: validAttachments.map((a) => ({ filename: a.filename, content: a.content.toString("base64") })),
       } : {}),
     });
     if (error) throw new Error(error.message);
@@ -104,7 +103,7 @@ export async function sendViaAccount(account: EmailAccount, args: SendArgs): Pro
     ...(args.headers ? { headers: args.headers } : {}),
     ...(args.inReplyTo ? { inReplyTo: args.inReplyTo, references: args.references || args.inReplyTo } : {}),
     ...(validAttachments.length ? {
-      attachments: validAttachments.map((a) => ({ filename: a.filename, path: a.fsPath })),
+      attachments: validAttachments.map((a) => ({ filename: a.filename, content: a.content })),
     } : {}),
   });
   return { messageId: info.messageId };

@@ -47,7 +47,7 @@ const faqItems: FaqItem[] = [
   },
   {
     q: "Are LLM costs included?",
-    a: "You choose: bring your own API key (OpenAI, Groq, Gemini, or any OpenAI-compatible endpoint), or connect Claude over MCP and let your Claude subscription write everything — in which case ColdPigeon adds zero LLM cost.",
+    a: "You choose: bring your own API key (OpenAI, Groq, Gemini, or any OpenAI-compatible endpoint), or connect Claude over MCP and let your Claude subscription write everything — in which case ColdPegion adds zero LLM cost.",
   },
   {
     q: "Can I change plans anytime?",

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ColdPigeon — AI-Powered Email Marketing Automation",
+  title: "ColdPegion — AI-Powered Email Marketing Automation",
   description:
     "Create autonomous AI agents for cold email outreach. Personalize sequences, manage prospects, and automate your email marketing at scale.",
 };

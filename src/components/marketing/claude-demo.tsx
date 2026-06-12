@@ -14,17 +14,17 @@ const CALLS = [
     result: "50 qualified leads found",
   },
   {
-    connector: "coldpigeon",
+    connector: "coldpegion",
     call: "import_leads('Fintech CTOs', leads[50])",
     result: "50 prospects imported",
   },
   {
-    connector: "coldpigeon",
+    connector: "coldpegion",
     call: "prepare_emails(agent: 'Fintech Outbound', items[150])",
     result: "150 personalized emails written",
   },
   {
-    connector: "coldpigeon",
+    connector: "coldpegion",
     call: "launch_agent('Fintech Outbound')",
     result: "Campaign live — sending at safe limits",
   },

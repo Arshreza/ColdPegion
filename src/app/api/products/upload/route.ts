@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import { join, extname } from "path";
+import { extname } from "path";
 import { randomUUID } from "crypto";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { matchesMagicBytes } from "@/lib/security/file-validation";
+import { saveUpload } from "@/lib/storage";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -33,13 +34,20 @@ export async function POST(request: Request) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
+  // The extension alone is spoofable — the content must match it too.
+  if (!matchesMagicBytes(buffer, ext)) {
+    return NextResponse.json(
+      { error: `File content does not match its ${ext} extension` },
+      { status: 400 }
+    );
+  }
+
   const filename = `${randomUUID()}${ext}`;
-  const userDir = join(process.cwd(), "public", "uploads", "products", session.user.id);
-  await mkdir(userDir, { recursive: true });
-  await writeFile(join(userDir, filename), buffer);
+  const key = `products/${session.user.id}/${filename}`;
+  await saveUpload(key, buffer, file.type || undefined);
 
   return NextResponse.json({
-    url: `/uploads/products/${session.user.id}/${filename}`,
+    url: `/uploads/${key}`,
     filename: file.name,
   });
 }

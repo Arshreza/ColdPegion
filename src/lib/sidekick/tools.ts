@@ -695,7 +695,7 @@ export function buildSidekickTools(ctx: SidekickContext) {
     }),
 
     start_welcome_tour: tool({
-      description: "Start or restart the interactive welcome onboarding tour for the user to guide them on setting up and navigating the ColdPigeon platform (Company Profile, Connect Email, Create Product, Launch First Agent).",
+      description: "Start or restart the interactive welcome onboarding tour for the user to guide them on setting up and navigating the ColdPegion platform (Company Profile, Connect Email, Create Product, Launch First Agent).",
       inputSchema: z.object({}).optional(),
       execute: async () => {
         return { success: true, message: "Welcome tour triggered. The user is now presented with the interactive tour dialog." };
@@ -705,7 +705,7 @@ export function buildSidekickTools(ctx: SidekickContext) {
     // ---------- HELP DOCS ----------
     list_help_topics: tool({
       description:
-        "List all ColdPigeon help guides (slug, title, description, category). Use this to discover which guide answers a how-to or product question.",
+        "List all ColdPegion help guides (slug, title, description, category). Use this to discover which guide answers a how-to or product question.",
       inputSchema: z.object({}),
       execute: async () => ({
         guides: guides.map((g) => ({ slug: g.slug, title: g.title, description: g.description, category: g.category })),
@@ -714,7 +714,7 @@ export function buildSidekickTools(ctx: SidekickContext) {
 
     get_help_guide: tool({
       description:
-        "Get the full content of a ColdPigeon help guide. Pass an exact slug (from list_help_topics) or a free-text question (e.g. 'how do I connect gmail') and the best-matching guides are returned as markdown. ALWAYS use this to answer how-to, setup, billing, deliverability, or troubleshooting questions instead of guessing.",
+        "Get the full content of a ColdPegion help guide. Pass an exact slug (from list_help_topics) or a free-text question (e.g. 'how do I connect gmail') and the best-matching guides are returned as markdown. ALWAYS use this to answer how-to, setup, billing, deliverability, or troubleshooting questions instead of guessing.",
       inputSchema: z.object({
         slugOrQuery: z.string().describe("A guide slug, or a free-text question to search for"),
       }),

@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, User, Loader2 } from "lucide-react";
+import { sanitizeCallbackUrl } from "@/lib/callback-url";
 
-export default function RegisterPage() {
-  const router = useRouter();
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  // Honor ?callbackUrl= so flows like MCP OAuth continue after sign-up.
+  const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,8 +52,9 @@ export default function RegisterPage() {
         setError("Error signing in after registration");
         setLoading(false);
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        // Full navigation (not router.push) so route-handler destinations like
+        // /api/oauth/authorize can issue their own redirects.
+        window.location.assign(callbackUrl);
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
@@ -60,12 +64,12 @@ export default function RegisterPage() {
 
   async function onGoogleSignIn() {
     setLoading(true);
-    await signIn("google", { callbackUrl: "/dashboard" });
+    await signIn("google", { callbackUrl });
   }
 
   async function onMicrosoftSignIn() {
     setLoading(true);
-    await signIn("microsoft-entra-id", { callbackUrl: "/dashboard" });
+    await signIn("microsoft-entra-id", { callbackUrl });
   }
 
   return (
@@ -209,12 +213,24 @@ export default function RegisterPage() {
       <p className="text-center text-sm text-foreground-muted">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href={
+            callbackUrl === "/dashboard"
+              ? "/login"
+              : `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+          }
           className="font-semibold text-brand-600 hover:text-brand-500 transition-colors"
         >
           Sign in
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

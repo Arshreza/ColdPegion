@@ -1,10 +1,10 @@
 /**
- * ColdPigeon help guides — single source of truth.
+ * ColdPegion help guides — single source of truth.
  *
  * Consumed in three places:
  *  1. The public docs site (/docs and /docs/[slug])
  *  2. The in-app AI Sidekick (list_help_topics / get_help_guide tools)
- *  3. Claude over MCP (same tool registry + the coldpigeon://docs resource)
+ *  3. Claude over MCP (same tool registry + the coldpegion://docs resource)
  */
 
 export interface GuideSection {
@@ -51,14 +51,14 @@ export const guides: Guide[] = [
       {
         heading: "Before you begin",
         body: [
-          "You need a ColdPigeon account (the Free plan is enough) and one email account you can send from — a Gmail address with an app password, any SMTP mailbox, or a Resend API key.",
+          "You need a ColdPegion account (the Free plan is enough) and one email account you can send from — a Gmail address with an app password, any SMTP mailbox, or a Resend API key.",
         ],
         tip: "Prefer talking over clicking? Open the AI Sidekick (bottom-right) and say “set up my account” — it can do every step below for you.",
       },
       {
-        heading: "Step 1 — Tell ColdPigeon what you sell",
+        heading: "Step 1 — Tell ColdPegion what you sell",
         steps: [
-          "Go to Dashboard → Company and paste your website URL. ColdPigeon extracts your company profile automatically.",
+          "Go to Dashboard → Company and paste your website URL. ColdPegion extracts your company profile automatically.",
           "Go to Dashboard → Products and add a product (or use “Extract from URL” to pull it from a landing page).",
           "Review the generated ideal customer profile (ICP) — your agents use it to target and personalize.",
         ],
@@ -160,7 +160,7 @@ export const guides: Guide[] = [
         heading: "Import your own file",
         steps: [
           "Go to Dashboard → Prospects → Import and upload a CSV or XLSX.",
-          "Map your columns to ColdPigeon fields (email is required; first name, company, title power personalization).",
+          "Map your columns to ColdPegion fields (email is required; first name, company, title power personalization).",
           "Pick or create a target list. Duplicates are skipped automatically.",
         ],
       },
@@ -174,7 +174,7 @@ export const guides: Guide[] = [
       {
         heading: "Let Claude mine leads for you",
         body: [
-          "If you've connected the Claude (MCP) connector, Claude can search Apollo or the web with its own connectors and push results into ColdPigeon with the import_leads tool — see the “Connect Claude (MCP)” guide.",
+          "If you've connected the Claude (MCP) connector, Claude can search Apollo or the web with its own connectors and push results into ColdPegion with the import_leads tool — see the “Connect Claude (MCP)” guide.",
         ],
       },
     ],
@@ -254,36 +254,36 @@ export const guides: Guide[] = [
   {
     slug: "connect-claude-mcp",
     title: "Connect Claude (MCP) and automate with routines",
-    description: "Add ColdPigeon as a Claude connector, then put outreach on auto mode with routines.",
+    description: "Add ColdPegion as a Claude connector, then put outreach on auto mode with routines.",
     category: "AI & automation",
     keywords: ["claude", "mcp", "connector", "token", "oauth", "routine", "auto mode", "automation", "import_leads", "prepare_emails", "claude desktop"],
     sections: [
       {
         heading: "What you get",
         body: [
-          "ColdPigeon ships a remote MCP server. Connected to Claude, your Claude can run the entire product — mine leads (with Apollo or any other connector), import them, write a unique email per lead, configure and launch agents, and read your stats — using your existing Claude subscription. No API keys, no extra LLM cost.",
+          "ColdPegion ships a remote MCP server. Connected to Claude, your Claude can run the entire product — mine leads (with Apollo or any other connector), import them, write a unique email per lead, configure and launch agents, and read your stats — using your existing Claude subscription. No API keys, no extra LLM cost.",
         ],
       },
       {
         heading: "Connect on claude.ai (OAuth — easiest)",
         steps: [
           "In claude.ai go to Settings → Connectors → Add custom connector.",
-          "Enter your ColdPigeon MCP URL: https://app.coldpigeon.com/api/mcp",
-          "Sign in to ColdPigeon when prompted and approve access. Done.",
+          "Enter your ColdPegion MCP URL: https://app.coldpegion.com/api/mcp",
+          "Sign in to ColdPegion when prompted and approve access. Done.",
         ],
       },
       {
         heading: "Connect Claude Desktop (access token)",
         steps: [
-          "In ColdPigeon, open Dashboard → Connect to Claude and create an access token (shown once — copy it).",
+          "In ColdPegion, open Dashboard → Connect to Claude and create an access token (shown once — copy it).",
           "Add the config below to Claude Desktop, then restart it.",
         ],
         code: {
           label: "claude_desktop_config.json",
           text: `{
   "mcpServers": {
-    "coldpigeon": {
-      "url": "https://app.coldpigeon.com/api/mcp",
+    "coldpegion": {
+      "url": "https://app.coldpegion.com/api/mcp",
       "headers": { "Authorization": "Bearer cp_live_..." }
     }
   }
@@ -293,7 +293,7 @@ export const guides: Guide[] = [
       {
         heading: "First conversation",
         body: [
-          "Ask Claude: “What can you do with ColdPigeon?” — it will list the available tools. A good first run: “Find 25 leads matching my ICP, import them to a list called Trial Batch, write a 2-step sequence for each, and prepare the emails — don't launch yet.”",
+          "Ask Claude: “What can you do with ColdPegion?” — it will list the available tools. A good first run: “Find 25 leads matching my ICP, import them to a list called Trial Batch, write a 2-step sequence for each, and prepare the emails — don't launch yet.”",
         ],
       },
       {
@@ -327,7 +327,7 @@ export const guides: Guide[] = [
         body: [
           "Before any cold sending, configure SPF, DKIM, and DMARC DNS records for your sending domain (your email provider documents the exact records). Without them, even perfect emails go to spam.",
         ],
-        tip: "Send from a secondary domain (e.g. coldpigeon-hq.com instead of coldpigeon.com) to protect your main domain's reputation.",
+        tip: "Send from a secondary domain (e.g. coldpegion-hq.com instead of coldpegion.com) to protect your main domain's reputation.",
       },
       {
         heading: "Warmup",

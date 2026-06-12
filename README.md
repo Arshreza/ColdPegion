@@ -1,6 +1,6 @@
-# ColdPigeon — Email Marketing Automation Platform
+# ColdPegion — Email Marketing Automation Platform
 
-Welcome to **ColdPigeon**, an advanced email automation dashboard powered by Next.js, Prisma ORM, BullMQ, and LLM integrations. This platform allows you to create AI-driven sales agents that generate highly personalized cold outreach emails based on your product specs, target prospect profiles, and custom rules, sending them directly via verified SMTP accounts.
+Welcome to **ColdPegion**, an advanced email automation dashboard powered by Next.js, Prisma ORM, BullMQ, and LLM integrations. This platform allows you to create AI-driven sales agents that generate highly personalized cold outreach emails based on your product specs, target prospect profiles, and custom rules, sending them directly via verified SMTP accounts.
 
 This guide is designed to help junior developers set up the project locally from scratch.
 
@@ -56,10 +56,10 @@ Create a file named `.env` in the root folder of the project. Copy the template 
 
 ```env
 # Database Connection (Raw URL used by Next.js & @prisma/adapter-pg)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/coldpigeon_dev?sslmode=disable"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/coldpegion_dev?sslmode=disable"
 
 # Database Connection for CLI Operations (Used for migrations)
-DATABASE_URL_UNPOOLED="postgresql://postgres:postgres@localhost:5432/coldpigeon_dev"
+DATABASE_URL_UNPOOLED="postgresql://postgres:postgres@localhost:5432/coldpegion_dev"
 
 # Authentication Config
 NEXTAUTH_SECRET="your_generated_32_character_nextauth_secret"
@@ -83,13 +83,23 @@ ENCRYPTION_MASTER_KEY="your_32_byte_hex_string"
 # Optional: Apollo.io API Key (enables live lead sourcing in Find Leads -> Super Search)
 # APOLLO_API_KEY="your_apollo_api_key"
 
+# Optional: S3-compatible upload storage (AWS S3, Cloudflare R2, MinIO).
+# REQUIRED for serverless / multi-instance deploys (Vercel etc.) — without it,
+# product file uploads are written to local disk (public/uploads), which is
+# ephemeral there and not shared with the worker process.
+# STORAGE_S3_BUCKET="your-bucket"
+# STORAGE_S3_REGION="auto"
+# STORAGE_S3_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"
+# STORAGE_S3_ACCESS_KEY_ID="..."
+# STORAGE_S3_SECRET_ACCESS_KEY="..."
+
 # Optional: ZeroBounce API Key (enables premium, high-accuracy email validation)
 # ZEROBOUNCE_API_KEY="your_zerobounce_api_key"
 
 # Optional: System Transactional Emails (for automated invitations & request approvals)
 # Option A — Resend:
 # RESEND_API_KEY="re_your_api_key"
-# EMAIL_FROM="ColdPigeon <no-reply@yourdomain.com>"
+# EMAIL_FROM="ColdPegion <no-reply@yourdomain.com>"
 
 # Option B — SMTP / SendGrid:
 # SMTP_HOST="smtp.sendgrid.net"
@@ -97,7 +107,7 @@ ENCRYPTION_MASTER_KEY="your_32_byte_hex_string"
 # SMTP_USER="apikey"
 # SMTP_PASSWORD="your-api-key"
 # SMTP_SECURE="false"   # set to true for SSL port 465
-# EMAIL_FROM="ColdPigeon <no-reply@yourdomain.com>"
+# EMAIL_FROM="ColdPegion <no-reply@yourdomain.com>"
 ```
 
 > [!TIP]

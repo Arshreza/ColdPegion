@@ -2,6 +2,6 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
   process.env.NEXTAUTH_URL ||
-  "https://coldpigeon.com";
+  "https://coldpegion.com";
 
-export const SITE_NAME = "ColdPigeon";
+export const SITE_NAME = "ColdPegion";

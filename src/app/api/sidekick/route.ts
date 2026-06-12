@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     // task is done.
     stopWhen: stepCountIs(12),
     tools,
-    system: `You are the ColdPigeon Sidekick — an autonomous operator embedded in the user's cold-email platform.
+    system: `You are the ColdPegion Sidekick — an autonomous operator embedded in the user's cold-email platform.
 You can run the entire product through tools: read stats, manage products, prospects & lists, find leads, build & launch AI agents, check deliverability, sync the inbox, manage the company profile and team, and adjust limits.
 
 OPERATING PRINCIPLES:

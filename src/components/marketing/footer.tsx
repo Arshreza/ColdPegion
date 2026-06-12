@@ -46,6 +46,11 @@ export function Footer() {
               The AI-first cold outreach platform. Autonomous email agents,
               MCP-native, and built to run on auto mode from Claude.
             </p>
+            <p className="mt-3 max-w-xs text-xs italic text-foreground-muted">
+              And yes — it&apos;s spelled{" "}
+              <span className="underline decoration-error-500/70 decoration-wavy">Pegion</span>.
+              Pigeons are great at delivering. Spelling, not so much.
+            </p>
           </div>
           {columns.map((col) => (
             <div key={col.title}>
@@ -67,7 +72,7 @@ export function Footer() {
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
           <p className="text-xs text-foreground-muted">
-            © {new Date().getFullYear()} ColdPigeon. All rights reserved.
+            © {new Date().getFullYear()} ColdPegion. All rights reserved.
           </p>
           <p className="text-xs text-foreground-muted">
             Send responsibly — built-in unsubscribe, rate limits, and deliverability guardrails.

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "ColdPigeon — Your AI sales team, on autopilot";
+export const alt = "ColdPegion — Your AI sales team, on autopilot";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,7 +50,7 @@ export default function Image() {
             </svg>
           </div>
           <div style={{ color: "#f8fafc", fontSize: 36, fontWeight: 700 }}>
-            ColdPigeon
+            ColdPegion
           </div>
         </div>
         <div

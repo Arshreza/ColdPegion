@@ -7,7 +7,7 @@ import { Resend } from "resend";
  *
  *   RESEND_API_KEY            -> use Resend
  *   (or) SMTP_HOST + SMTP_PASSWORD [+ SMTP_PORT, SMTP_USER, SMTP_SECURE]
- *   EMAIL_FROM                -> e.g. "ColdPigeon <no-reply@yourdomain.com>"
+ *   EMAIL_FROM                -> e.g. "ColdPegion <no-reply@yourdomain.com>"
  *   NEXTAUTH_URL / APP_URL    -> base URL used to build links
  *
  * If nothing is configured the helper is a safe no-op (logs and returns
@@ -19,7 +19,7 @@ export function appUrl(): string {
 }
 
 function fromAddress(): string {
-  return process.env.EMAIL_FROM || "ColdPigeon <onboarding@resend.dev>";
+  return process.env.EMAIL_FROM || "ColdPegion <onboarding@resend.dev>";
 }
 
 type Provider = "resend" | "smtp" | "none";
@@ -91,13 +91,13 @@ function layout(title: string, bodyHtml: string, cta?: { label: string; url: str
   return `<!doctype html><html><body style="margin:0;background:#f5f6f8;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 0;"><tr><td align="center">
     <table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
-      <tr><td style="padding:24px 28px;border-bottom:1px solid #eef0f2;font-weight:700;font-size:18px;color:#111;">ColdPigeon</td></tr>
+      <tr><td style="padding:24px 28px;border-bottom:1px solid #eef0f2;font-weight:700;font-size:18px;color:#111;">ColdPegion</td></tr>
       <tr><td style="padding:28px;color:#374151;font-size:14px;line-height:1.6;">
         <h1 style="margin:0 0 12px;font-size:18px;color:#111;">${title}</h1>
         ${bodyHtml}
         ${cta ? `<div style="margin:24px 0 4px;"><a href="${cta.url}" style="background:#4f46e5;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;display:inline-block;">${cta.label}</a></div>` : ""}
       </td></tr>
-      <tr><td style="padding:18px 28px;border-top:1px solid #eef0f2;color:#9ca3af;font-size:12px;">Sent by ColdPigeon. If this wasn't expected, you can ignore it.</td></tr>
+      <tr><td style="padding:18px 28px;border-top:1px solid #eef0f2;color:#9ca3af;font-size:12px;">Sent by ColdPegion. If this wasn't expected, you can ignore it.</td></tr>
     </table>
   </td></tr></table></body></html>`;
 }
@@ -109,17 +109,17 @@ export function sendInviteEmail(params: { to: string; orgName: string; inviterNa
   const html = layout(
     `You're invited to join ${escape(params.orgName)}`,
     `<p>${params.inviterName ? `${escape(params.inviterName)} has` : "You've been"} invited you to join
-     <strong>${escape(params.orgName)}</strong> on ColdPigeon as a <strong>${params.role.toLowerCase()}</strong>.</p>
+     <strong>${escape(params.orgName)}</strong> on ColdPegion as a <strong>${params.role.toLowerCase()}</strong>.</p>
      <p>Create your account with <strong>this email address</strong> and you'll be added automatically.</p>`,
     { label: "Accept invite", url }
   );
-  return sendTransactionalEmail({ to: params.to, subject: `Join ${params.orgName} on ColdPigeon`, html });
+  return sendTransactionalEmail({ to: params.to, subject: `Join ${params.orgName} on ColdPegion`, html });
 }
 
 export function sendExistingUserAddedEmail(params: { to: string; orgName: string; role: string }) {
   const html = layout(
     `You've been added to ${escape(params.orgName)}`,
-    `<p>You now have <strong>${params.role.toLowerCase()}</strong> access to <strong>${escape(params.orgName)}</strong> on ColdPigeon.</p>`,
+    `<p>You now have <strong>${params.role.toLowerCase()}</strong> access to <strong>${escape(params.orgName)}</strong> on ColdPegion.</p>`,
     { label: "Open dashboard", url: `${appUrl()}/dashboard` }
   );
   return sendTransactionalEmail({ to: params.to, subject: `You've been added to ${params.orgName}`, html });
@@ -139,7 +139,7 @@ export function sendJoinRequestAdminEmail(params: { to: string; orgName: string;
 export function sendJoinApprovedEmail(params: { to: string; orgName: string }) {
   const html = layout(
     `You're in 🎉`,
-    `<p>Your request to join <strong>${escape(params.orgName)}</strong> on ColdPigeon has been approved.</p>`,
+    `<p>Your request to join <strong>${escape(params.orgName)}</strong> on ColdPegion has been approved.</p>`,
     { label: "Open dashboard", url: `${appUrl()}/dashboard` }
   );
   return sendTransactionalEmail({ to: params.to, subject: `Approved: welcome to ${params.orgName}`, html });
@@ -155,12 +155,12 @@ export function sendPasswordResetEmail(params: { to: string; token: string }) {
   }
   const html = layout(
     "Reset your password",
-    `<p>We received a request to reset your password for your ColdPigeon account.</p>
+    `<p>We received a request to reset your password for your ColdPegion account.</p>
      <p>Click the button below to choose a new password. This link will expire in 1 hour.</p>
      <p>If you did not request a password reset, you can safely ignore this email.</p>`,
     { label: "Reset Password", url }
   );
-  return sendTransactionalEmail({ to: params.to, subject: "Reset your ColdPigeon password", html });
+  return sendTransactionalEmail({ to: params.to, subject: "Reset your ColdPegion password", html });
 }
 
 export function sendVerificationEmail(params: { to: string; token: string }) {
@@ -173,12 +173,48 @@ export function sendVerificationEmail(params: { to: string; token: string }) {
   }
   const html = layout(
     "Verify your email address",
-    `<p>Thank you for signing up for ColdPigeon!</p>
+    `<p>Thank you for signing up for ColdPegion!</p>
      <p>Please click the button below to verify your email address and unlock your dashboard.</p>
-     <p>If you did not create a ColdPigeon account, you can safely ignore this email.</p>`,
+     <p>If you did not create a ColdPegion account, you can safely ignore this email.</p>`,
     { label: "Verify Email", url }
   );
-  return sendTransactionalEmail({ to: params.to, subject: "Verify your ColdPigeon email address", html });
+  return sendTransactionalEmail({ to: params.to, subject: "Verify your ColdPegion email address", html });
+}
+
+export function sendSalesInquiryEmail(params: {
+  name: string;
+  email: string;
+  company?: string;
+  message: string;
+}) {
+  const { name, email, company, message } = params;
+  const html = layout(
+    `New sales inquiry from ${escape(name)}`,
+    `<p><strong>Name:</strong> ${escape(name)}</p>
+     <p><strong>Email:</strong> ${escape(email)}</p>
+     ${company ? `<p><strong>Company:</strong> ${escape(company)}</p>` : ""}
+     <p><strong>Message:</strong></p>
+     <blockquote style="border-left:3px solid #4f46e5;margin:0;padding:8px 14px;color:#374151;">${escape(message).replace(/\n/g, "<br>")}</blockquote>`
+  );
+  return sendTransactionalEmail({
+    to: "support@coldpegion.com",
+    subject: `Sales inquiry from ${name}${company ? ` (${company})` : ""}`,
+    html,
+  });
+}
+
+export function sendSalesInquiryAutoReply(params: { name: string; email: string }) {
+  const html = layout(
+    `We got your message, ${escape(params.name)}!`,
+    `<p>Thanks for reaching out to ColdPegion. Our team will get back to you within one business day.</p>
+     <p>In the meantime, you can always email us directly at
+     <a href="mailto:support@coldpegion.com" style="color:#4f46e5;">support@coldpegion.com</a>.</p>`
+  );
+  return sendTransactionalEmail({
+    to: params.email,
+    subject: "We received your message — ColdPegion",
+    html,
+  });
 }
 
 function escape(s: string): string {

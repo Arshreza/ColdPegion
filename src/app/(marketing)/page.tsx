@@ -120,7 +120,7 @@ const steps = [
     icon: Target,
     title: "Tell it what you sell",
     description:
-      "Paste your website. ColdPigeon extracts your products, value props, and ideal customer profile automatically.",
+      "Paste your website. ColdPegion extracts your products, value props, and ideal customer profile automatically.",
   },
   {
     icon: Search,
@@ -145,7 +145,7 @@ const steps = [
 const testimonials = [
   {
     quote:
-      "I added ColdPigeon as a Claude connector, set up a morning routine, and now wake up to campaigns that prospected, wrote, and launched themselves. It genuinely feels like hiring an SDR team.",
+      "I added ColdPegion as a Claude connector, set up a morning routine, and now wake up to campaigns that prospected, wrote, and launched themselves. It genuinely feels like hiring an SDR team.",
     name: "Sara K.",
     role: "Founder, B2B SaaS",
   },
@@ -165,16 +165,16 @@ const testimonials = [
 
 const faqItems: FaqItem[] = [
   {
-    q: "How is ColdPigeon different from Instantly, Smartlead, or Lemlist?",
-    a: "Those tools automate sending templates. ColdPigeon deploys autonomous AI agents that write a unique email for every prospect based on your product and their profile — and it's the only outreach platform that's MCP-native, so you can drive the entire thing from Claude with your existing subscription, including fully automated routines.",
+    q: "How is ColdPegion different from Instantly, Smartlead, or Lemlist?",
+    a: "Those tools automate sending templates. ColdPegion deploys autonomous AI agents that write a unique email for every prospect based on your product and their profile — and it's the only outreach platform that's MCP-native, so you can drive the entire thing from Claude with your existing subscription, including fully automated routines.",
   },
   {
     q: "What exactly does the Claude / MCP integration do?",
-    a: "ColdPigeon ships a remote MCP server. Add it as a connector in Claude (claude.ai or Claude Desktop) and Claude gets tools to import leads, write per-lead sequences, configure agents, and launch campaigns. Pair it with the Apollo connector or any other connector and Claude can mine leads, write every email, and launch — using your Claude plan, with zero ColdPigeon LLM cost.",
+    a: "ColdPegion ships a remote MCP server. Add it as a connector in Claude (claude.ai or Claude Desktop) and Claude gets tools to import leads, write per-lead sequences, configure agents, and launch campaigns. Pair it with the Apollo connector or any other connector and Claude can mine leads, write every email, and launch — using your Claude plan, with zero ColdPegion LLM cost.",
   },
   {
     q: "What are Claude routines and “auto mode”?",
-    a: "Routines are scheduled tasks in Claude. Set one like “every weekday at 8 AM, find 50 new leads matching my ICP, prepare personalized emails, and launch my agent” — and your outbound runs hands-free. ColdPigeon's worker sends Claude-written emails at safe, human-like pace.",
+    a: "Routines are scheduled tasks in Claude. Set one like “every weekday at 8 AM, find 50 new leads matching my ICP, prepare personalized emails, and launch my agent” — and your outbound runs hands-free. ColdPegion's worker sends Claude-written emails at safe, human-like pace.",
   },
   {
     q: "Do I need my own LLM API key?",
@@ -186,7 +186,7 @@ const faqItems: FaqItem[] = [
   },
   {
     q: "How do I connect my email accounts?",
-    a: "Connect Gmail via app password, any SMTP provider, or a Resend API key in about a minute. Add as many mailboxes as your plan allows and ColdPigeon rotates sending across them automatically.",
+    a: "Connect Gmail via app password, any SMTP provider, or a Resend API key in about a minute. Add as many mailboxes as your plan allows and ColdPegion rotates sending across them automatically.",
   },
   {
     q: "Is there a free plan?",
@@ -229,7 +229,7 @@ export default function HomePage() {
               <span className="gradient-text-animated">on autopilot.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-foreground-secondary">
-              ColdPigeon deploys autonomous email agents that find leads,
+              ColdPegion deploys autonomous email agents that find leads,
               write a personal email for every prospect, and fill your inbox
               with replies. Connect it to Claude and your entire outbound runs
               on auto mode — Apollo prospecting, copywriting, launching —
@@ -327,16 +327,16 @@ export default function HomePage() {
                 <span className="gradient-text-animated">inside Claude.</span>
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-sidebar-fg/80">
-                ColdPigeon is a native MCP connector. Claude doesn&apos;t just
+                ColdPegion is a native MCP connector. Claude doesn&apos;t just
                 advise on your outreach — it <em>operates</em> it, chaining your
-                other connectors with ColdPigeon&apos;s tools.
+                other connectors with ColdPegion&apos;s tools.
               </p>
               <ul className="mt-8 space-y-5">
                 {[
                   {
                     icon: Plug,
                     title: "Chain any connector",
-                    text: "Claude mines leads with the Apollo connector, researches them with web search, then imports and launches in ColdPigeon — one conversation, end to end.",
+                    text: "Claude mines leads with the Apollo connector, researches them with web search, then imports and launches in ColdPegion — one conversation, end to end.",
                   },
                   {
                     icon: CalendarClock,
@@ -346,7 +346,7 @@ export default function HomePage() {
                   {
                     icon: Flame,
                     title: "Zero extra LLM cost",
-                    text: "Claude writes every email on your existing subscription. ColdPigeon's worker just sends them verbatim — no API keys, no per-token bills.",
+                    text: "Claude writes every email on your existing subscription. ColdPegion's worker just sends them verbatim — no API keys, no per-token bills.",
                   },
                 ].map((item) => (
                   <li key={item.title} className="flex gap-4">
@@ -375,8 +375,8 @@ export default function HomePage() {
                   <pre className="overflow-x-auto rounded-xl border border-sidebar-border bg-black/40 p-4 font-mono text-xs leading-relaxed text-sidebar-fg">
 {`{
   "mcpServers": {
-    "coldpigeon": {
-      "url": "https://app.coldpigeon.com/api/mcp",
+    "coldpegion": {
+      "url": "https://app.coldpegion.com/api/mcp",
       "headers": {
         "Authorization": "Bearer cp_live_..."
       }

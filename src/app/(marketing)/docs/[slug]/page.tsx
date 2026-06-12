@@ -44,7 +44,7 @@ export default async function GuidePage({
     headline: guide.title,
     description: guide.description,
     url: `${SITE_URL}/docs/${guide.slug}`,
-    publisher: { "@type": "Organization", name: "ColdPigeon", url: SITE_URL },
+    publisher: { "@type": "Organization", name: "ColdPegion", url: SITE_URL },
   };
 
   return (

@@ -1,5 +1,5 @@
 import { Queue, Worker, Job } from "bullmq";
-import { join, resolve, sep } from "path";
+import { readUpload, uploadUrlToKey } from "@/lib/storage";
 import { getRedisConnection } from "./connection";
 import { db } from "@/lib/db";
 import { generatePersonalizedEmail } from "@/lib/llm/generator";
@@ -206,25 +206,24 @@ export const initWorker = () => {
 </div>`;
       }
       // Build attachments from productFiles JSON stored on linked products.
-      // Only attach PDFs. Strip the leading "/" before joining (Windows path.join
-      // treats a leading "/" as drive-root-relative).
+      // Content is loaded through the storage driver (local disk or S3), and
+      // constrained to the user's own "products/<userId>/" key prefix.
       const attachments: EmailAttachment[] = [];
-      const uploadsRoot = resolve(process.cwd(), "public", "uploads", "products", userId);
+      const userKeyPrefix = `products/${userId}/`;
 
       for (const ap of agent.products || []) {
         try {
           const files: Array<{ url: string; filename: string; description: string }> =
             (ap.product as any).productFiles ? JSON.parse((ap.product as any).productFiles) : [];
           for (const f of files) {
-            const resolvedPath = resolve(process.cwd(), "public", f.url.replace(/^\/+/, ""));
-            // Constrain path to the user's specific uploads subdirectory
-            if (resolvedPath.startsWith(uploadsRoot + sep)) {
-              attachments.push({
-                filename: f.filename,
-                fsPath: resolvedPath,
-              });
-            } else {
+            const key = uploadUrlToKey(f.url);
+            if (!key || !key.startsWith(userKeyPrefix)) {
               console.warn(`Blocked traversal/cross-tenant file attachment attempt. Path: ${f.url}`);
+              continue;
+            }
+            const content = await readUpload(key);
+            if (content) {
+              attachments.push({ filename: f.filename, content });
             }
           }
         } catch { }

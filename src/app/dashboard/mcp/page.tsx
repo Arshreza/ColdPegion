@@ -62,7 +62,7 @@ export default function McpPage() {
   const mcpUrl = `${origin}/api/mcp`;
   const desktopConfig = `{
   "mcpServers": {
-    "coldpigeon": {
+    "coldpegion": {
       "url": "${mcpUrl}",
       "headers": { "Authorization": "Bearer ${newToken || "YOUR_TOKEN"}" }
     }
@@ -76,7 +76,7 @@ export default function McpPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Connect to Claude (MCP)</h1>
           <p className="text-foreground-muted text-sm">
-            Drive your entire ColdPigeon account from Claude — mine leads, write sequences, and launch campaigns
+            Drive your entire ColdPegion account from Claude — mine leads, write sequences, and launch campaigns
             using your own Claude subscription.
           </p>
         </div>
@@ -159,7 +159,7 @@ export default function McpPage() {
               agent, then <code>prepare_emails</code> with a unique email for each lead, and launch.&quot;</em>
             </p>
             <p className="text-foreground-muted">
-              Claude writes every email on <strong>your</strong> Claude plan; ColdPigeon just sends them — no platform LLM,
+              Claude writes every email on <strong>your</strong> Claude plan; ColdPegion just sends them — no platform LLM,
               no API key needed.
             </p>
           </div>

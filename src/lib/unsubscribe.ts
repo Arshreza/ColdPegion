@@ -2,7 +2,7 @@ import crypto from "crypto";
 
 // HMAC-signed, stateless unsubscribe tokens (no schema changes needed).
 function key(): string {
-  return process.env.NEXTAUTH_SECRET || process.env.ENCRYPTION_MASTER_KEY || "coldpigeon-unsub-key";
+  return process.env.NEXTAUTH_SECRET || process.env.ENCRYPTION_MASTER_KEY || "coldpegion-unsub-key";
 }
 
 export function makeUnsubToken(prospectId: string): string {

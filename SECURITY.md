@@ -1,6 +1,6 @@
 # Security
 
-This document summarizes ColdPigeon's security posture and how to report issues.
+This document summarizes ColdPegion's security posture and how to report issues.
 
 ## Authentication & SSO
 - **Providers:** email/password (bcrypt, cost 12), Google OAuth, and **Microsoft

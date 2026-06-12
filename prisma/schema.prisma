@@ -1,4 +1,4 @@
-// ColdPigeon — Database Schema
+// ColdPegion — Database Schema
 // PostgreSQL + Prisma ORM
 
 generator client {
@@ -761,6 +761,8 @@ model GlobalSettings {
   dailyEmailLimit   Int      @default(500)
   zeroBounceApiKey  String?  @db.Text  // Encrypted — third-party ZeroBounce API key
   verifyOnImport    Boolean  @default(false) // Default verification preference
+  apolloApiKey      String?  @db.Text  // Encrypted — Apollo.io API key for lead enrichment
+  instantlyApiKey   String?  @db.Text  // Encrypted — Instantly.ai API key for sending
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

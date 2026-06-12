@@ -10,8 +10,8 @@ import { SITE_NAME, SITE_URL } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "ColdPigeon — Your AI Sales Team, On Autopilot",
-    template: "%s · ColdPigeon",
+    default: "ColdPegion — Your AI Sales Team, On Autopilot",
+    template: "%s · ColdPegion",
   },
   description:
     "Autonomous AI email agents that find leads, write hyper-personalized outreach, and book replies. MCP-native: run your entire outbound from Claude on auto mode.",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   category: "technology",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "ColdPigeon — Your AI Sales Team, On Autopilot",
+    title: "ColdPegion — Your AI Sales Team, On Autopilot",
     description:
       "Autonomous AI email agents that find leads, write hyper-personalized outreach, and book replies. MCP-native: run your entire outbound from Claude on auto mode.",
     type: "website",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ColdPigeon — Your AI Sales Team, On Autopilot",
+    title: "ColdPegion — Your AI Sales Team, On Autopilot",
     description:
       "The only cold outreach platform that runs inside Claude. Apollo + any connector, auto mode with Claude routines.",
   },

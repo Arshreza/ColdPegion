@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Loader2 } from "lucide-react";
+import { sanitizeCallbackUrl } from "@/lib/callback-url";
 
-export default function LoginPage() {
-  const router = useRouter();
+function LoginForm() {
+  const searchParams = useSearchParams();
+  // Honor ?callbackUrl= (e.g. the MCP OAuth authorize flow bounces here and
+  // must continue back to /api/oauth/authorize after login).
+  const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,8 +38,9 @@ export default function LoginPage() {
         setError("Invalid email or password");
         setLoading(false);
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        // Full navigation (not router.push) so route-handler destinations like
+        // /api/oauth/authorize can issue their own redirects.
+        window.location.assign(callbackUrl);
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
@@ -45,12 +50,12 @@ export default function LoginPage() {
 
   async function onGoogleSignIn() {
     setLoading(true);
-    await signIn("google", { callbackUrl: "/dashboard" });
+    await signIn("google", { callbackUrl });
   }
 
   async function onMicrosoftSignIn() {
     setLoading(true);
-    await signIn("microsoft-entra-id", { callbackUrl: "/dashboard" });
+    await signIn("microsoft-entra-id", { callbackUrl });
   }
 
   return (
@@ -184,12 +189,24 @@ export default function LoginPage() {
       <p className="text-center text-sm text-foreground-muted">
         Don&apos;t have an account?{" "}
         <Link
-          href="/register"
+          href={
+            callbackUrl === "/dashboard"
+              ? "/register"
+              : `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+          }
           className="font-semibold text-brand-600 hover:text-brand-500 transition-colors"
         >
           Sign up
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

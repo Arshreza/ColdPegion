@@ -25,7 +25,7 @@ import { Tilt } from "@/components/marketing/tilt";
 export const metadata: Metadata = {
   title: "Run your outreach from Claude (MCP)",
   description:
-    "ColdPigeon is an MCP-native Claude connector. Chain Apollo and any other connector, let Claude write every email, and put outbound on auto mode with Claude routines.",
+    "ColdPegion is an MCP-native Claude connector. Chain Apollo and any other connector, let Claude write every email, and put outbound on auto mode with Claude routines.",
   alternates: { canonical: "/claude" },
 };
 
@@ -41,7 +41,7 @@ const tools = [
 const routineExamples = [
   "Every weekday at 8 AM: find 50 new SaaS founders matching my ICP on Apollo, write a personal 3-step sequence for each, and launch my agent.",
   "Every Monday: review last week's reply rates per agent, pause the worst subject lines, and draft improved variants for my approval.",
-  "Every morning: check my ColdPigeon inbox, draft replies to interested prospects, and summarize hot leads in a message to me.",
+  "Every morning: check my ColdPegion inbox, draft replies to interested prospects, and summarize hot leads in a message to me.",
 ];
 
 export default function ClaudePage() {
@@ -62,7 +62,7 @@ export default function ClaudePage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pb-28 lg:pt-24">
           <div className="animate-slide-up">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-500/40 bg-accent-500/10 px-3 py-1 text-xs font-semibold text-accent-600 dark:text-accent-500">
-              <Sparkles className="h-3.5 w-3.5" /> ColdPigeon × Claude
+              <Sparkles className="h-3.5 w-3.5" /> ColdPegion × Claude
             </span>
             <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
               Marketing on <span className="gradient-text-animated">auto mode.</span>
@@ -70,7 +70,7 @@ export default function ClaudePage() {
               Powered by Claude.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-foreground-secondary">
-              ColdPigeon ships a native MCP server, so Claude becomes your
+              ColdPegion ships a native MCP server, so Claude becomes your
               outbound operator. It chains the Apollo connector to mine leads,
               writes a personal email for every prospect, and launches campaigns
               — in one conversation, or on a schedule with Claude routines.
@@ -105,7 +105,7 @@ export default function ClaudePage() {
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-foreground-secondary">
                 This is a real workflow: a scheduled Claude routine chains the
-                Apollo connector with ColdPigeon&apos;s MCP tools — prospecting,
+                Apollo connector with ColdPegion&apos;s MCP tools — prospecting,
                 copywriting, and launching before you&apos;ve had coffee. Every
                 email is written individually, by Claude, on your subscription.
               </p>
@@ -138,7 +138,7 @@ export default function ClaudePage() {
               Why MCP changes everything for outbound
             </h2>
             <p className="mt-4 text-lg text-foreground-secondary">
-              Other tools bolt a chatbot onto a dashboard. ColdPigeon hands
+              Other tools bolt a chatbot onto a dashboard. ColdPegion hands
               Claude the actual controls.
             </p>
           </Reveal>
@@ -147,12 +147,12 @@ export default function ClaudePage() {
               {
                 icon: Plug,
                 title: "Claude chains your connectors",
-                text: "Apollo finds the leads. Web search researches them. ColdPigeon imports, personalizes, and sends. Claude orchestrates all of it — you just describe the outcome.",
+                text: "Apollo finds the leads. Web search researches them. ColdPegion imports, personalizes, and sends. Claude orchestrates all of it — you just describe the outcome.",
               },
               {
                 icon: Flame,
                 title: "Your subscription does the writing",
-                text: "Every email is composed by Claude on the plan you already pay for. ColdPigeon stores them and sends verbatim — zero platform LLM fees, no API keys to manage.",
+                text: "Every email is composed by Claude on the plan you already pay for. ColdPegion stores them and sends verbatim — zero platform LLM fees, no API keys to manage.",
               },
               {
                 icon: CalendarClock,
@@ -195,7 +195,7 @@ export default function ClaudePage() {
                   {
                     icon: Workflow,
                     title: "Import",
-                    text: "import_leads pushes them into ColdPigeon — deduplicated, verified, organized into lists.",
+                    text: "import_leads pushes them into ColdPegion — deduplicated, verified, organized into lists.",
                   },
                   {
                     icon: Sparkles,
@@ -285,7 +285,7 @@ export default function ClaudePage() {
                   {
                     icon: Globe,
                     title: "claude.ai & Claude Desktop",
-                    text: "Add ColdPigeon as a custom connector with OAuth — sign in once and you're done. Or paste a config with a personal access token into Claude Desktop.",
+                    text: "Add ColdPegion as a custom connector with OAuth — sign in once and you're done. Or paste a config with a personal access token into Claude Desktop.",
                   },
                   {
                     icon: KeyRound,
@@ -319,8 +319,8 @@ export default function ClaudePage() {
                   <pre className="overflow-x-auto rounded-xl border border-sidebar-border bg-black/40 p-4 font-mono text-xs leading-relaxed text-sidebar-fg">
 {`{
   "mcpServers": {
-    "coldpigeon": {
-      "url": "https://app.coldpigeon.com/api/mcp",
+    "coldpegion": {
+      "url": "https://app.coldpegion.com/api/mcp",
       "headers": {
         "Authorization": "Bearer cp_live_..."
       }
@@ -332,7 +332,7 @@ export default function ClaudePage() {
                     {[
                       "Create a token in Settings → Connect to Claude",
                       "Paste the config (or use OAuth on claude.ai)",
-                      "Ask Claude: “What can you do with ColdPigeon?”",
+                      "Ask Claude: “What can you do with ColdPegion?”",
                     ].map((step, i) => (
                       <div key={step} className="flex items-center gap-2.5 text-sm text-sidebar-fg/80">
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-[11px] font-bold text-brand-400">

@@ -33,7 +33,12 @@ export default function AuthLayout({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 18a6 6 0 0 0 3.84-10.61" />
                 </svg>
               </div>
-              <span className="text-2xl font-bold tracking-tight">ColdPigeon</span>
+              <span className="text-2xl font-bold tracking-tight" title="Yes, it's spelled Pegion — on purpose.">
+                Cold
+                <span className="underline decoration-white/70 decoration-wavy decoration-[1.5px] underline-offset-4">
+                  Pegion
+                </span>
+              </span>
             </div>
             <h1 className="text-4xl font-bold leading-tight mb-4">
               Automate your email outreach with AI agents

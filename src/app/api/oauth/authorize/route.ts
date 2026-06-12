@@ -10,7 +10,7 @@ function errorRedirect(redirectUri: string, error: string, state?: string | null
 }
 
 /**
- * OAuth 2.1 authorization endpoint. Requires a logged-in ColdPigeon user (reuses
+ * OAuth 2.1 authorization endpoint. Requires a logged-in ColdPegion user (reuses
  * the NextAuth session), validates the client + redirect URI, and issues a PKCE
  * authorization code. Auto-approves for the user's own account.
  */

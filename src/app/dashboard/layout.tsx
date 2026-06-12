@@ -48,7 +48,7 @@ export default async function DashboardLayout({
         <div className="max-w-md text-center bg-background border border-border rounded-xl shadow-sm p-8">
           <h1 className="text-xl font-bold text-foreground">Awaiting approval</h1>
           <p className="text-sm text-foreground-muted mt-3">
-            Your company is already on ColdPigeon. An administrator needs to approve your request to
+            Your company is already on ColdPegion. An administrator needs to approve your request to
             join the team before you can access the dashboard. You&apos;ll get in as soon as they do.
           </p>
         </div>

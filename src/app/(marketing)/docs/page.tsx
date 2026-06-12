@@ -8,7 +8,7 @@ import { SpotlightCard } from "@/components/marketing/spotlight-card";
 export const metadata: Metadata = {
   title: "Documentation & guides",
   description:
-    "Everything you need to run ColdPigeon: setup guides, lead sourcing, AI agents, deliverability, the Claude/MCP connector, billing, and troubleshooting.",
+    "Everything you need to run ColdPegion: setup guides, lead sourcing, AI agents, deliverability, the Claude/MCP connector, billing, and troubleshooting.",
   alternates: { canonical: "/docs" },
 };
 

@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     let res: Response;
     try {
       res = await safeFetch(url, {
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; ColdPigeonBot/1.0)", Accept: "text/html" },
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; ColdPegionBot/1.0)", Accept: "text/html" },
         signal: AbortSignal.timeout(10000),
       });
     } catch (e) {

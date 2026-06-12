@@ -35,9 +35,9 @@ export async function POST(_request: Request, props: { params: Promise<{ id: str
       trackOpens: source.trackOpens,
       trackClicks: source.trackClicks,
       status: "DRAFT",
-      products: { create: source.products.map((p : any) => ({ productId: p.productId })) },
-      prospectLists: { create: source.prospectLists.map((l : any) => ({ prospectListId: l.prospectListId })) },
-      emailAccounts: { create: source.emailAccounts.map((a : any) => ({ emailAccountId: a.emailAccountId })) },
+      products: { create: source.products.map((p) => ({ productId: p.productId })) },
+      prospectLists: { create: source.prospectLists.map((l) => ({ prospectListId: l.prospectListId })) },
+      emailAccounts: { create: source.emailAccounts.map((a) => ({ emailAccountId: a.emailAccountId })) },
     },
   });
 

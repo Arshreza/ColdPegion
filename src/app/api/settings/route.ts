@@ -8,6 +8,8 @@ const settingsSchema = z.object({
   dailyEmailLimit: z.number().int().min(1).max(10000).optional(),
   zeroBounceApiKey: z.string().optional().nullable(),
   verifyOnImport: z.boolean().optional(),
+  apolloApiKey: z.string().optional().nullable(),
+  instantlyApiKey: z.string().optional().nullable(),
 });
 
 export async function GET() {
@@ -27,11 +29,15 @@ export async function GET() {
       });
     }
 
-    // Return settings but mask the actual key — just show if it's set
+    // Return settings but mask the actual keys — just show if they're set
     return NextResponse.json({
       ...settings,
       zeroBounceApiKey: settings.zeroBounceApiKey ? "••••••••••••••••" : null,
       hasZeroBounceKey: !!settings.zeroBounceApiKey,
+      apolloApiKey: settings.apolloApiKey ? "••••••••••••••••" : null,
+      hasApolloKey: !!settings.apolloApiKey,
+      instantlyApiKey: settings.instantlyApiKey ? "••••••••••••••••" : null,
+      hasInstantlyKey: !!settings.instantlyApiKey,
     });
   } catch (error) {
     console.error("Error fetching settings:", error);
@@ -53,8 +59,13 @@ export async function PUT(request: Request) {
     if (parsed.dailyEmailLimit !== undefined) updateData.dailyEmailLimit = parsed.dailyEmailLimit;
     if (parsed.verifyOnImport !== undefined) updateData.verifyOnImport = parsed.verifyOnImport;
     if (parsed.zeroBounceApiKey !== undefined) {
-      // null = clear the key; string = encrypt and store
       updateData.zeroBounceApiKey = parsed.zeroBounceApiKey ? encrypt(parsed.zeroBounceApiKey) : null;
+    }
+    if (parsed.apolloApiKey !== undefined) {
+      updateData.apolloApiKey = parsed.apolloApiKey ? encrypt(parsed.apolloApiKey) : null;
+    }
+    if (parsed.instantlyApiKey !== undefined) {
+      updateData.instantlyApiKey = parsed.instantlyApiKey ? encrypt(parsed.instantlyApiKey) : null;
     }
 
     const settings = await db.globalSettings.upsert({
@@ -72,6 +83,10 @@ export async function PUT(request: Request) {
       ...settings,
       zeroBounceApiKey: settings.zeroBounceApiKey ? "••••••••••••••••" : null,
       hasZeroBounceKey: !!settings.zeroBounceApiKey,
+      apolloApiKey: settings.apolloApiKey ? "••••••••••••••••" : null,
+      hasApolloKey: !!settings.apolloApiKey,
+      instantlyApiKey: settings.instantlyApiKey ? "••••••••••••••••" : null,
+      hasInstantlyKey: !!settings.instantlyApiKey,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

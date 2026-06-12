@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Server, Settings as SettingsIcon, Save, ShieldCheck } from "lucide-react";
+import { Loader2, Server, Settings as SettingsIcon, Save, ShieldCheck, Plug } from "lucide-react";
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -29,6 +29,18 @@ export default function SettingsPage() {
     apiKey: "",
     hasKey: false,
   });
+
+  const [apolloSettings, setApolloSettings] = useState({
+    apiKey: "",
+    hasKey: false,
+  });
+  const [savingApollo, setSavingApollo] = useState(false);
+
+  const [instantlySettings, setInstantlySettings] = useState({
+    apiKey: "",
+    hasKey: false,
+  });
+  const [savingInstantly, setSavingInstantly] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -60,6 +72,14 @@ export default function SettingsPage() {
             setZbSettings({
               apiKey: settingsData.hasZeroBounceKey ? "••••••••••••••••" : "",
               hasKey: settingsData.hasZeroBounceKey || false,
+            });
+            setApolloSettings({
+              apiKey: settingsData.hasApolloKey ? "••••••••••••••••" : "",
+              hasKey: settingsData.hasApolloKey || false,
+            });
+            setInstantlySettings({
+              apiKey: settingsData.hasInstantlyKey ? "••••••••••••••••" : "",
+              hasKey: settingsData.hasInstantlyKey || false,
             });
           }
         }
@@ -136,6 +156,50 @@ export default function SettingsPage() {
       setMessage({ text: "Failed to save ZeroBounce config", type: "error" });
     } finally {
       setSavingZb(false);
+    }
+  }
+
+  async function handleApolloSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSavingApollo(true);
+    setMessage(null);
+    try {
+      const keyToSend = apolloSettings.apiKey === "••••••••••••••••" ? undefined : apolloSettings.apiKey || null;
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apolloApiKey: keyToSend }),
+      });
+      if (!res.ok) throw new Error("Failed to save Apollo settings");
+      const data = await res.json();
+      setApolloSettings({ apiKey: data.hasApolloKey ? "••••••••••••••••" : "", hasKey: data.hasApolloKey });
+      setMessage({ text: "Apollo API key saved", type: "success" });
+    } catch {
+      setMessage({ text: "Failed to save Apollo API key", type: "error" });
+    } finally {
+      setSavingApollo(false);
+    }
+  }
+
+  async function handleInstantlySubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSavingInstantly(true);
+    setMessage(null);
+    try {
+      const keyToSend = instantlySettings.apiKey === "••••••••••••••••" ? undefined : instantlySettings.apiKey || null;
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ instantlyApiKey: keyToSend }),
+      });
+      if (!res.ok) throw new Error("Failed to save Instantly settings");
+      const data = await res.json();
+      setInstantlySettings({ apiKey: data.hasInstantlyKey ? "••••••••••••••••" : "", hasKey: data.hasInstantlyKey });
+      setMessage({ text: "Instantly API key saved", type: "success" });
+    } catch {
+      setMessage({ text: "Failed to save Instantly API key", type: "error" });
+    } finally {
+      setSavingInstantly(false);
     }
   }
 
@@ -246,6 +310,81 @@ export default function SettingsPage() {
               </Button>
             </div>
           </form>
+        </div>
+
+        {/* Integrations */}
+        <div className="rounded-xl border border-border bg-background shadow-sm" id="integrations">
+          <div className="border-b border-border p-6 flex items-center gap-3">
+            <div className="p-2 bg-purple-500/10 rounded-lg">
+              <Plug className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Integrations</h2>
+              <p className="text-sm text-foreground-muted">Connect Apollo.io for lead enrichment and Instantly for sending infrastructure.</p>
+            </div>
+          </div>
+
+          {/* Apollo */}
+          <div className="border-b border-border">
+            <div className="px-6 pt-5 pb-2">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-semibold text-foreground text-sm">Apollo.io</span>
+                {apolloSettings.hasKey && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success-500/10 px-2 py-0.5 text-xs text-success-600 font-medium">Connected</span>
+                )}
+              </div>
+              <p className="text-xs text-foreground-muted">Use your Apollo API key to enrich prospects and pull leads directly from Apollo&#39;s B2B database.</p>
+            </div>
+            <form onSubmit={handleApolloSubmit} className="px-6 pb-5 pt-3 space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="apolloApiKey">Apollo API Key</Label>
+                <Input
+                  id="apolloApiKey"
+                  type="password"
+                  value={apolloSettings.apiKey}
+                  onChange={(e) => setApolloSettings({ ...apolloSettings, apiKey: e.target.value })}
+                  placeholder={apolloSettings.hasKey ? "Key configured. Enter new key to replace." : "ap_..."}
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={savingApollo} size="sm">
+                  {savingApollo ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Save Apollo Key
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Instantly */}
+          <div>
+            <div className="px-6 pt-5 pb-2">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-semibold text-foreground text-sm">Instantly.ai</span>
+                {instantlySettings.hasKey && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success-500/10 px-2 py-0.5 text-xs text-success-600 font-medium">Connected</span>
+                )}
+              </div>
+              <p className="text-xs text-foreground-muted">Connect Instantly to use its sending infrastructure and warm-up pool alongside your MailPilot campaigns.</p>
+            </div>
+            <form onSubmit={handleInstantlySubmit} className="px-6 pb-5 pt-3 space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="instantlyApiKey">Instantly API Key</Label>
+                <Input
+                  id="instantlyApiKey"
+                  type="password"
+                  value={instantlySettings.apiKey}
+                  onChange={(e) => setInstantlySettings({ ...instantlySettings, apiKey: e.target.value })}
+                  placeholder={instantlySettings.hasKey ? "Key configured. Enter new key to replace." : "inst_..."}
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit" disabled={savingInstantly} size="sm">
+                  {savingInstantly ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Save Instantly Key
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
 
         {/* Global Limits */}

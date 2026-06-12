@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, CreditCard, Check, Zap } from "lucide-react";
+import { SalesModal } from "@/components/marketing/sales-modal";
 
 export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [showSalesModal, setShowSalesModal] = useState(false);
 
   async function load() {
     const res = await fetch("/api/billing");
@@ -97,7 +99,7 @@ export default function BillingPage() {
       </div>
 
       {/* Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {data.plans.filter((p: any) => p.id !== "ENTERPRISE").map((p: any) => {
           const current = p.id === data.plan;
           return (
@@ -127,7 +129,26 @@ export default function BillingPage() {
             </div>
           );
         })}
+
+        {/* Enterprise card */}
+        <div className="rounded-xl border border-border bg-background p-5">
+          <h3 className="font-semibold text-lg">Enterprise</h3>
+          <p className="text-2xl font-bold mt-1">Custom</p>
+          <ul className="mt-4 space-y-2 text-sm text-foreground-secondary">
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success-600" /> Unlimited emails / day</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success-600" /> Unlimited mailboxes & seats</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success-600" /> Dedicated deliverability expert</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success-600" /> Custom integrations & SSO</li>
+          </ul>
+          <div className="mt-5">
+            <Button variant="outline" className="w-full" onClick={() => setShowSalesModal(true)}>
+              Talk to sales
+            </Button>
+          </div>
+        </div>
       </div>
+
+      {showSalesModal && <SalesModal onClose={() => setShowSalesModal(false)} />}
 
       {data.plan !== "FREE" && data.isAdmin && (
         <Button variant="outline" onClick={manage} disabled={busy === "portal"}>

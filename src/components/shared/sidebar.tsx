@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -41,8 +42,12 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [usage, setUsage] = useState<{ sentToday: number; dailyLimit: number; unlimited: boolean; planLabel: string } | null>(null);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const userEmail = session?.user?.email ?? "";
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=support@coldpegion.com${userEmail ? `&from=${encodeURIComponent(userEmail)}` : ""}`;
 
   useEffect(() => {
     fetch("/api/usage").then((r) => (r.ok ? r.json() : null)).then(setUsage).catch(() => {});
@@ -84,8 +89,14 @@ export function Sidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M7 18a6 6 0 0 0 3.84-10.61" />
           </svg>
         </div>
-        <span className="text-xl font-bold tracking-tight text-sidebar-fg">
-          ColdPigeon
+        <span
+          className="text-xl font-bold tracking-tight text-sidebar-fg"
+          title="Yes, it's spelled Pegion — on purpose."
+        >
+          Cold
+          <span className="underline decoration-error-500/70 decoration-wavy decoration-[1.5px] underline-offset-4">
+            Pegion
+          </span>
         </span>
       </div>
 
@@ -124,7 +135,19 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="px-4 pt-3 pb-4 border-t border-sidebar-border space-y-3">
+        <a
+          href={gmailUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Email support"
+          className="flex items-center gap-2 text-xs text-sidebar-fg-muted hover:text-sidebar-fg transition-colors"
+        >
+          <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          </svg>
+          <span>support@coldpegion.com</span>
+        </a>
         <Link href="/dashboard/billing" className="block bg-sidebar-active/50 rounded-lg p-3 hover:bg-sidebar-active transition-colors">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-sidebar-fg-muted uppercase tracking-wider">
