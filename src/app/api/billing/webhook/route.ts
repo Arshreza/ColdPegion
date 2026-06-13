@@ -16,6 +16,9 @@ export async function POST(request: Request) {
   }
 
   const signature = request.headers.get("webhook-signature");
+  const webhookId = request.headers.get("webhook-id");
+  const webhookTimestamp = request.headers.get("webhook-timestamp");
+
   if (!signature) {
     return NextResponse.json({ error: "Missing webhook-signature header" }, { status: 400 });
   }
@@ -32,6 +35,8 @@ export async function POST(request: Request) {
   try {
     event = await dodo.webhooks.unwrap(rawBody, {
       headers: {
+        "webhook-id": webhookId || "",
+        "webhook-timestamp": webhookTimestamp || "",
         "webhook-signature": signature,
       },
     });
