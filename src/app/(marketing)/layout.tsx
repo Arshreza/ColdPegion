@@ -75,7 +75,7 @@ export default async function MarketingLayout({
   const session = await auth();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <JsonLd data={organizationJsonLd} />
       <JsonLd data={webSiteJsonLd} />
       <ScrollProgress />

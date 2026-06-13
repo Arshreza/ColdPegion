@@ -132,17 +132,17 @@ export function ClaudeDemo() {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-border bg-background-secondary p-4 shadow-xl glow-brand sm:p-5">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-background-secondary p-4 shadow-xl glow-brand sm:p-5">
       {/* window chrome */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex gap-1.5">
+      <div className="mb-4 flex items-center justify-between gap-2 min-w-0">
+        <div className="flex shrink-0 gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-error-500/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-warning-500/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-success-500/70" />
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-background-tertiary px-2.5 py-1 text-[11px] font-medium text-foreground-secondary">
-          <CalendarClock className="h-3 w-3 text-accent-500" />
-          Claude routine · every weekday, 8:00 AM
+        <span className="inline-flex min-w-0 items-center gap-1.5 overflow-hidden rounded-full bg-background-tertiary px-2.5 py-1 text-[11px] font-medium text-foreground-secondary">
+          <CalendarClock className="h-3 w-3 shrink-0 text-accent-500" />
+          <span className="truncate">Claude routine · every weekday, 8:00 AM</span>
         </span>
       </div>
 

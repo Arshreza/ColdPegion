@@ -252,7 +252,7 @@ export default function HomePage() {
               Free forever plan · 3-minute setup · Cancel anytime
             </p>
           </div>
-          <div className="animate-fade-in lg:pl-6">
+          <div className="animate-fade-in min-w-0 overflow-hidden lg:pl-6">
             <Tilt>
               <ClaudeDemo />
             </Tilt>
@@ -318,7 +318,7 @@ export default function HomePage() {
         />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
-            <Reveal>
+            <Reveal className="min-w-0">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-500/40 bg-accent-500/15 px-3 py-1 text-xs font-semibold text-accent-500">
                 <Sparkles className="h-3.5 w-3.5" /> Industry first
               </span>
@@ -366,7 +366,7 @@ export default function HomePage() {
                 </Link>
               </Button>
             </Reveal>
-            <Reveal delay={150}>
+            <Reveal delay={150} className="min-w-0 overflow-hidden">
               <Tilt max={5}>
                 <div className="rounded-2xl border border-sidebar-border bg-background-secondary/5 p-5 backdrop-blur">
                   <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-sidebar-fg-muted">
