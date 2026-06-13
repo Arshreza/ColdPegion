@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionUser, isAdminRole } from "@/lib/org";
 import { PLANS, getPlanLimits } from "@/lib/billing/plans";
-import { isStripeConfigured } from "@/lib/billing/stripe";
+import { isDodoConfigured } from "@/lib/billing/dodo";
 
 /** GET /api/billing — current plan, status, limits, current usage counts. */
 export async function GET() {
@@ -27,7 +27,7 @@ export async function GET() {
     limits,
     usage: { mailboxes, seats },
     isAdmin: isAdminRole(me.role),
-    stripeConfigured: isStripeConfigured(),
+    dodoConfigured: isDodoConfigured(),
     plans: Object.values(PLANS).map((p) => ({
       id: p.id,
       label: p.label,

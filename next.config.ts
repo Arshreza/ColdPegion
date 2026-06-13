@@ -29,6 +29,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  allowedDevOrigins: ["7151fd758221c7.lhr.life", "*.lhr.life", "*.loca.lt"],
   turbopack: {
     root: process.cwd(),
   },

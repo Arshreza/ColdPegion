@@ -3,7 +3,10 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 import { searchApolloPeople, isApolloConfigured } from "@/lib/prospecting/apollo";
+import { previewInstantlyLeads, isInstantlyConfigured } from "@/lib/prospecting/instantly";
+import { importFoundProspects } from "@/lib/prospecting/import";
 import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { decrypt } from "@/lib/encryption";
 
 const filtersSchema = z.object({
   jobTitles: z.array(z.string()).default([]),
@@ -18,7 +21,7 @@ const filtersSchema = z.object({
 
 const bodySchema = z.object({
   filters: filtersSchema,
-  source: z.enum(["database", "apollo", "global"]).optional(),
+  source: z.enum(["database", "apollo", "global", "instantly"]).optional(),
 });
 
 /**
@@ -37,11 +40,38 @@ export async function POST(request: Request) {
 
   try {
     const { filters, source } = bodySchema.parse(await request.json());
-    const useApollo = source === "apollo" && isApolloConfigured();
+
+    // Prefer the user's own integration keys (Settings → Integrations) over
+    // the platform-wide env vars.
+    const settings = await db.globalSettings.findUnique({ where: { userId: session.user.id } });
+    const decryptKey = (value: string | null | undefined): string | null => {
+      if (!value) return null;
+      try {
+        return decrypt(value);
+      } catch {
+        return null;
+      }
+    };
+    const userApolloKey = decryptKey(settings?.apolloApiKey);
+    const userInstantlyKey = decryptKey(settings?.instantlyApiKey);
+
+    const useApollo = source === "apollo" && isApolloConfigured(userApolloKey);
 
     if (useApollo) {
-      const results = await searchApolloPeople(filters);
+      const results = await searchApolloPeople(filters, 1, userApolloKey);
       return NextResponse.json({ source: "apollo", apolloConfigured: true, results });
+    }
+
+    // Instantly SuperSearch preview — free, but emails are only revealed by
+    // the (credit-spending) enrichment import flow.
+    if (source === "instantly" && isInstantlyConfigured(userInstantlyKey)) {
+      const { count, results } = await previewInstantlyLeads(filters, userInstantlyKey);
+      return NextResponse.json({
+        source: "instantly",
+        instantlyConfigured: true,
+        totalCount: count,
+        results,
+      });
     }
 
     // Shared Global Lead Database (e.g. imported Sales Navigator data).
@@ -144,7 +174,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       source: "database",
-      apolloConfigured: isApolloConfigured(),
+      apolloConfigured: isApolloConfigured(userApolloKey),
+      instantlyConfigured: isInstantlyConfigured(userInstantlyKey),
       results,
     });
   } catch (error) {
@@ -182,39 +213,7 @@ export async function PUT(request: Request) {
     const list = await db.prospectList.findUnique({ where: { id: listId, userId: session.user.id } });
     if (!list) return NextResponse.json({ error: "List not found" }, { status: 404 });
 
-    let imported = 0;
-    for (const p of prospects) {
-      const prospect = await db.prospect.upsert({
-        where: { userId_email: { userId: session.user.id, email: p.email } },
-        update: {
-          firstName: p.firstName || undefined,
-          lastName: p.lastName || undefined,
-          companyName: p.companyName || undefined,
-          jobTitle: p.jobTitle || undefined,
-          industry: p.industry || undefined,
-          location: p.location || undefined,
-          linkedinUrl: p.linkedinUrl || undefined,
-        },
-        create: {
-          userId: session.user.id,
-          email: p.email,
-          firstName: p.firstName,
-          lastName: p.lastName,
-          companyName: p.companyName,
-          jobTitle: p.jobTitle,
-          industry: p.industry,
-          location: p.location,
-          linkedinUrl: p.linkedinUrl,
-          source: "finder",
-        },
-      });
-      await db.prospectListEntry.upsert({
-        where: { prospectId_prospectListId: { prospectId: prospect.id, prospectListId: listId } },
-        update: {},
-        create: { prospectId: prospect.id, prospectListId: listId },
-      });
-      imported++;
-    }
+    const imported = await importFoundProspects(session.user.id, listId, prospects);
 
     return NextResponse.json({ imported });
   } catch (error) {

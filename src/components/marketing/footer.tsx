@@ -29,6 +29,7 @@ const columns: { title: string; links: { href: string; label: string }[] }[] = [
       { href: "/docs/troubleshooting", label: "Troubleshooting" },
       { href: "/claude", label: "Connect Claude" },
       { href: "/#faq", label: "FAQ" },
+      { href: "mailto:support@coldpegion.com", label: "Contact support" },
       { href: "/login", label: "Log in" },
       { href: "/register", label: "Create account" },
     ],

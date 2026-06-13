@@ -364,7 +364,7 @@ export default function SettingsPage() {
                   <span className="inline-flex items-center gap-1 rounded-full bg-success-500/10 px-2 py-0.5 text-xs text-success-600 font-medium">Connected</span>
                 )}
               </div>
-              <p className="text-xs text-foreground-muted">Connect Instantly to use its sending infrastructure and warm-up pool alongside your MailPilot campaigns.</p>
+              <p className="text-xs text-foreground-muted">Use your Instantly API key to search its B2B lead database from Find Leads and import enriched leads with verified work emails (spends your Instantly credits).</p>
             </div>
             <form onSubmit={handleInstantlySubmit} className="px-6 pb-5 pt-3 space-y-3">
               <div className="space-y-2">

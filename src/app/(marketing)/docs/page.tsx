@@ -68,6 +68,13 @@ export default function DocsIndexPage() {
               </div>
             </div>
           </div>
+          <p className="mt-4 text-center text-sm text-foreground-muted">
+            Prefer a human? Email{" "}
+            <a href="mailto:support@coldpegion.com" className="font-medium text-brand-600 hover:underline dark:text-brand-400">
+              support@coldpegion.com
+            </a>{" "}
+            — we read every message.
+          </p>
         </Reveal>
       </section>
 

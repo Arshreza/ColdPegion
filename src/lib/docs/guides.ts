@@ -142,7 +142,7 @@ export const guides: Guide[] = [
     title: "Find, import, and verify leads",
     description: "Use the lead database, Apollo Super Search, CSV/XLSX import, and email verification.",
     category: "Leads",
-    keywords: ["leads", "prospects", "apollo", "import", "csv", "xlsx", "find leads", "super search", "verify", "zerobounce", "lists"],
+    keywords: ["leads", "prospects", "apollo", "instantly", "integrations", "api key", "import", "csv", "xlsx", "find leads", "super search", "verify", "zerobounce", "lists"],
     sections: [
       {
         heading: "The built-in lead finder",
@@ -155,6 +155,24 @@ export const guides: Guide[] = [
         body: [
           "Super Search runs live Apollo.io people searches for fresher, deeper coverage. It's available on every plan; results import with full name, title, company, and verified email where available.",
         ],
+        steps: [
+          "Go to Dashboard → Settings → Integrations and paste your Apollo.io API key (created in Apollo under Settings → Integrations → API).",
+          "Open Find Leads, switch the source to Apollo, and set your filters — title, seniority, location, headcount, keywords.",
+          "Select the people you want and add them straight to a prospect list.",
+        ],
+        tip: "Your key is stored encrypted and only ever used for your own searches. Searches run against your Apollo plan's credits.",
+      },
+      {
+        heading: "SuperSearch (Instantly)",
+        body: [
+          "With an Instantly.ai API key connected (Dashboard → Settings → Integrations), Find Leads can search Instantly's B2B lead database too. Previewing matches is free; importing runs an enrichment in your Instantly workspace that resolves verified work emails — 1 Instantly credit per lead.",
+        ],
+        steps: [
+          "Paste your Instantly API key in Settings → Integrations (create one in Instantly under Settings → Integrations → API keys).",
+          "In Find Leads, switch the source to Instantly and search — you'll see names, titles, and companies, with emails hidden at this stage.",
+          "Pick a target list, choose how many leads to import, and hit Import. ColdPegion enriches them through your Instantly account and pulls them in with emails — leads without one are skipped.",
+        ],
+        tip: "The enriched leads also stay in a lead list in your Instantly workspace, so the credits aren't lost if you use both tools.",
       },
       {
         heading: "Import your own file",
@@ -425,6 +443,7 @@ export const guides: Guide[] = [
           "Pro — $99/mo: 5,000 emails/day, 25 mailboxes, 10 seats, advanced deliverability suite.",
           "Enterprise — custom: unlimited everything, SSO, dedicated support.",
         ],
+        tip: "Not sure which plan fits, or need custom volume? Use Talk to Sales on the pricing page or email support@coldpegion.com.",
       },
       {
         heading: "Managing your subscription",
@@ -519,6 +538,7 @@ export const guides: Guide[] = [
         heading: "Still stuck?",
         body: [
           "Ask the AI Sidekick in the dashboard — it can read these guides, inspect your account, and often fix the issue directly. If you've connected Claude, asking Claude works the same way.",
+          "For anything the Sidekick can't solve, email us at support@coldpegion.com — a human reads every message.",
         ],
       },
     ],

@@ -23,6 +23,8 @@ model Organization {
   planStatus           String?  // active, trialing, past_due, canceled
   stripeCustomerId     String?  @unique
   stripeSubscriptionId String?
+  dodoCustomerId       String?  @unique
+  dodoSubscriptionId   String?
   planRenewsAt         DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

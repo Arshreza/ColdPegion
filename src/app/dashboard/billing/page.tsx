@@ -76,9 +76,9 @@ export default function BillingPage() {
 
       {msg && <div className="p-3 rounded-md text-sm bg-brand-500/10 text-brand-700">{msg}</div>}
 
-      {!data.stripeConfigured && (
+      {!data.dodoConfigured && (
         <div className="p-3 rounded-md text-sm bg-warning-500/10 text-warning-700">
-          Billing isn&apos;t connected on this instance yet (no Stripe keys). Plans below are illustrative; limits are still enforced.
+          Billing isn&apos;t connected on this instance yet (no Dodo Payments keys). Plans below are illustrative; limits are still enforced.
         </div>
       )}
 

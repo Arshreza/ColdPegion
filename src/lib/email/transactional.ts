@@ -97,7 +97,7 @@ function layout(title: string, bodyHtml: string, cta?: { label: string; url: str
         ${bodyHtml}
         ${cta ? `<div style="margin:24px 0 4px;"><a href="${cta.url}" style="background:#4f46e5;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;display:inline-block;">${cta.label}</a></div>` : ""}
       </td></tr>
-      <tr><td style="padding:18px 28px;border-top:1px solid #eef0f2;color:#9ca3af;font-size:12px;">Sent by ColdPegion. If this wasn't expected, you can ignore it.</td></tr>
+      <tr><td style="padding:18px 28px;border-top:1px solid #eef0f2;color:#9ca3af;font-size:12px;">Sent by ColdPegion. If this wasn't expected, you can ignore it. Questions? <a href="mailto:support@coldpegion.com" style="color:#6b7280;">support@coldpegion.com</a></td></tr>
     </table>
   </td></tr></table></body></html>`;
 }

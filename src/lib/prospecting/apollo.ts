@@ -1,10 +1,11 @@
 /**
  * Apollo.io people-search integration.
  *
- * Activates only when APOLLO_API_KEY is set. Without it the Find Leads tool
- * falls back to searching the user's own prospect database. This keeps the
- * platform fully functional out of the box while leaving a real, documented
- * path to live lead sourcing.
+ * Uses the user's own Apollo API key (Dashboard → Settings → Integrations),
+ * falling back to a platform-wide APOLLO_API_KEY env var. Without either, the
+ * Find Leads tool falls back to searching the user's own prospect database.
+ * This keeps the platform fully functional out of the box while leaving a
+ * real, documented path to live lead sourcing.
  *
  * Docs: https://docs.apollo.io/reference/people-search
  */
@@ -31,8 +32,8 @@ export interface FoundPerson {
   linkedinUrl?: string;
 }
 
-export function isApolloConfigured(): boolean {
-  return Boolean(process.env.APOLLO_API_KEY);
+export function isApolloConfigured(userApiKey?: string | null): boolean {
+  return Boolean(userApiKey || process.env.APOLLO_API_KEY);
 }
 
 // Apollo seniority tokens differ from our display labels.
@@ -55,8 +56,12 @@ function mapHeadcount(buckets: string[]): string[] {
     .filter(Boolean);
 }
 
-export async function searchApolloPeople(filters: ApolloSearchFilters, page = 1): Promise<FoundPerson[]> {
-  const apiKey = process.env.APOLLO_API_KEY;
+export async function searchApolloPeople(
+  filters: ApolloSearchFilters,
+  page = 1,
+  userApiKey?: string | null
+): Promise<FoundPerson[]> {
+  const apiKey = userApiKey || process.env.APOLLO_API_KEY;
   if (!apiKey) return [];
 
   const payload: Record<string, unknown> = {
