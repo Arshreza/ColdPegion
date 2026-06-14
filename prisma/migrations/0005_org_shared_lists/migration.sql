@@ -1,0 +1,1 @@
+ALTER TABLE "ProspectList" ADD COLUMN "isOrgShared" BOOLEAN NOT NULL DEFAULT false;

@@ -15,12 +15,28 @@ export async function GET() {
   }
 
   try {
-    const lists = await db.prospectList.findMany({
-      where: { userId: session.user.id },
-      include: {
-        _count: {
-          select: { prospects: true }
+    const me = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { organizationId: true },
+    });
+
+    // Return user's own lists + any org-shared lists from org members
+    const where = me?.organizationId
+      ? {
+          OR: [
+            { userId: session.user.id },
+            {
+              isOrgShared: true,
+              user: { organizationId: me.organizationId },
+            },
+          ],
         }
+      : { userId: session.user.id };
+
+    const lists = await db.prospectList.findMany({
+      where,
+      include: {
+        _count: { select: { prospects: true } },
       },
       orderBy: { createdAt: "desc" },
     });
