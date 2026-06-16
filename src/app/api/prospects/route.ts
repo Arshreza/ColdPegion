@@ -4,13 +4,20 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 
 const prospectSchema = z.object({
-  email: z.string().email("Valid email required"),
-  firstName: z.string().optional().or(z.literal("")),
-  lastName: z.string().optional().or(z.literal("")),
+  email:       z.string().email("Valid email required"),
+  firstName:   z.string().optional().or(z.literal("")),
+  lastName:    z.string().optional().or(z.literal("")),
   companyName: z.string().optional().or(z.literal("")),
-  jobTitle: z.string().optional().or(z.literal("")),
+  jobTitle:    z.string().optional().or(z.literal("")),
   linkedinUrl: z.string().url().optional().or(z.literal("")),
-  listId: z.string().min(1, "List is required"),
+  industry:    z.string().optional().or(z.literal("")),
+  location:    z.string().optional().or(z.literal("")),
+  phone:       z.string().optional().or(z.literal("")),
+  website:     z.string().optional().or(z.literal("")),
+  seniority:   z.string().optional().or(z.literal("")),
+  department:  z.string().optional().or(z.literal("")),
+  timezone:    z.string().optional().or(z.literal("")),
+  listId:      z.string().min(1, "List is required"),
 });
 
 export async function GET(request: Request) {
@@ -63,20 +70,34 @@ export async function POST(request: Request) {
         }
       },
       update: {
-        firstName: data.firstName || undefined,
-        lastName: data.lastName || undefined,
+        firstName:   data.firstName   || undefined,
+        lastName:    data.lastName    || undefined,
         companyName: data.companyName || undefined,
-        jobTitle: data.jobTitle || undefined,
+        jobTitle:    data.jobTitle    || undefined,
         linkedinUrl: data.linkedinUrl || undefined,
+        industry:    data.industry    || undefined,
+        location:    data.location    || undefined,
+        phone:       data.phone       || undefined,
+        website:     data.website     || undefined,
+        seniority:   data.seniority   || undefined,
+        department:  data.department  || undefined,
+        timezone:    data.timezone    || undefined,
       },
       create: {
-        userId: session.user.id,
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        companyName: data.companyName,
-        jobTitle: data.jobTitle,
-        linkedinUrl: data.linkedinUrl,
+        userId:      session.user.id,
+        email:       data.email,
+        firstName:   data.firstName   || undefined,
+        lastName:    data.lastName    || undefined,
+        companyName: data.companyName || undefined,
+        jobTitle:    data.jobTitle    || undefined,
+        linkedinUrl: data.linkedinUrl || undefined,
+        industry:    data.industry    || undefined,
+        location:    data.location    || undefined,
+        phone:       data.phone       || undefined,
+        website:     data.website     || undefined,
+        seniority:   data.seniority   || undefined,
+        department:  data.department  || undefined,
+        timezone:    data.timezone    || undefined,
       }
     });
 

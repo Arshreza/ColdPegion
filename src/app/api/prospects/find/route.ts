@@ -120,35 +120,49 @@ export async function POST(request: Request) {
           fullName: true,
           companyName: true,
           jobTitle: true,
+          seniority: true,
+          department: true,
           industry: true,
           location: true,
+          country: true,
           linkedinUrl: true,
+          source: true,
         },
         take: 200,
       });
 
       const total = await db.globalLead.count();
       const results = leads.map((l) => ({
-        email: l.email!,
-        firstName: l.firstName || l.fullName?.split(" ")[0],
-        lastName: l.lastName,
+        email:       l.email!,
+        firstName:   l.firstName || l.fullName?.split(" ")[0],
+        lastName:    l.lastName,
         companyName: l.companyName,
-        jobTitle: l.jobTitle,
-        industry: l.industry,
-        location: l.location,
+        jobTitle:    l.jobTitle,
+        seniority:   l.seniority,
+        department:  l.department,
+        industry:    l.industry,
+        location:    l.location || l.country,
         linkedinUrl: l.linkedinUrl || undefined,
+        source:      l.source,
       }));
       return NextResponse.json({ source: "global", databaseSize: total, results });
     }
 
     // Database search — case-insensitive OR matching across the filter dimensions.
     const ors: any[] = [];
-    const titleNeedles = [...filters.jobTitles, ...filters.seniorities, ...filters.departments];
-    for (const t of titleNeedles) ors.push({ jobTitle: { contains: t, mode: "insensitive" } });
+    for (const t of filters.jobTitles) ors.push({ jobTitle: { contains: t, mode: "insensitive" } });
+    for (const s of filters.seniorities) {
+      ors.push({ jobTitle:  { contains: s, mode: "insensitive" } });
+      ors.push({ seniority: { contains: s, mode: "insensitive" } });
+    }
+    for (const d of filters.departments) {
+      ors.push({ jobTitle:   { contains: d, mode: "insensitive" } });
+      ors.push({ department: { contains: d, mode: "insensitive" } });
+    }
     for (const i of filters.industries) ors.push({ industry: { contains: i, mode: "insensitive" } });
     for (const l of filters.locations) ors.push({ location: { contains: l, mode: "insensitive" } });
     for (const k of [...filters.keywords, ...filters.technologies]) {
-      ors.push({ companyName: { contains: k, mode: "insensitive" } });
+      ors.push({ companyName:  { contains: k, mode: "insensitive" } });
       ors.push({ customFields: { contains: k, mode: "insensitive" } });
     }
 
@@ -164,9 +178,13 @@ export async function POST(request: Request) {
         lastName: true,
         companyName: true,
         jobTitle: true,
+        seniority: true,
+        department: true,
         industry: true,
         location: true,
         linkedinUrl: true,
+        phone: true,
+        website: true,
       },
       take: 200,
       orderBy: { createdAt: "desc" },

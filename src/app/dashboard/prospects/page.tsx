@@ -20,12 +20,19 @@ function findBestMatch(headers: string[], targetKey: string): string {
 
   // 2. Fuzzy synonym lookup
   const synonyms: Record<string, string[]> = {
-    email: ["email", "mail", "email address", "emailaddress", "address", "to email", "toemail"],
-    firstName: ["first name", "firstname", "first", "given name", "givenname", "fname"],
-    lastName: ["last name", "lastname", "last", "surname", "lname"],
+    email:       ["email", "mail", "email address", "emailaddress", "address", "to email", "toemail"],
+    firstName:   ["first name", "firstname", "first", "given name", "givenname", "fname"],
+    lastName:    ["last name", "lastname", "last", "surname", "lname"],
     companyName: ["company", "company name", "companyname", "organization", "org", "employer", "firm"],
-    jobTitle: ["job title", "jobtitle", "title", "role", "position", "designation"],
-    linkedinUrl: ["linkedin", "linkedin url", "linkedinurl", "linkedin link", "profile", "social"]
+    jobTitle:    ["job title", "jobtitle", "title", "role", "position", "designation"],
+    linkedinUrl: ["linkedin", "linkedin url", "linkedinurl", "linkedin link", "profile", "social"],
+    industry:    ["industry", "sector", "vertical", "company industry"],
+    seniority:   ["seniority", "seniority level", "level", "seniority_level"],
+    department:  ["department", "dept", "function", "team"],
+    phone:       ["phone", "phone number", "mobile", "telephone", "cell", "contact number"],
+    website:     ["website", "url", "company website", "web", "company url", "domain"],
+    location:    ["location", "city", "region", "address", "country"],
+    timezone:    ["timezone", "time zone", "tz"],
   };
 
   const list = synonyms[targetKey] || [];
@@ -181,21 +188,16 @@ export default function ProspectsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [newLead, setNewLead] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    companyName: "",
-    jobTitle: "",
-    linkedinUrl: "",
+    email: "", firstName: "", lastName: "", companyName: "",
+    jobTitle: "", linkedinUrl: "", industry: "", location: "",
+    phone: "", website: "", seniority: "", department: "",
   });
 
   const [headerMappings, setHeaderMappings] = useState({
-    email: "email",
-    firstName: "first name",
-    lastName: "last name",
-    companyName: "company",
-    jobTitle: "title",
-    linkedinUrl: "linkedin"
+    email: "email", firstName: "first name", lastName: "last name",
+    companyName: "company", jobTitle: "title", linkedinUrl: "linkedin",
+    industry: "", seniority: "", department: "",
+    phone: "", website: "", location: "", timezone: "",
   });
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [showMappingConfig, setShowMappingConfig] = useState(false);
@@ -289,7 +291,7 @@ export default function ProspectsPage() {
       });
       if (res.ok) {
         setShowAddLead(false);
-        setNewLead({ email: "", firstName: "", lastName: "", companyName: "", jobTitle: "", linkedinUrl: "" });
+        setNewLead({ email: "", firstName: "", lastName: "", companyName: "", jobTitle: "", linkedinUrl: "", industry: "", location: "", phone: "", website: "", seniority: "", department: "" });
         fetchProspects(activeListId);
         fetchLists();
       } else {
@@ -333,12 +335,19 @@ export default function ProspectsPage() {
           setFileHeaders(headers);
           // Set mapping defaults
           setHeaderMappings({
-            email: findBestMatch(headers, "email"),
-            firstName: findBestMatch(headers, "firstName"),
-            lastName: findBestMatch(headers, "lastName"),
+            email:       findBestMatch(headers, "email"),
+            firstName:   findBestMatch(headers, "firstName"),
+            lastName:    findBestMatch(headers, "lastName"),
             companyName: findBestMatch(headers, "companyName"),
-            jobTitle: findBestMatch(headers, "jobTitle"),
-            linkedinUrl: findBestMatch(headers, "linkedinUrl")
+            jobTitle:    findBestMatch(headers, "jobTitle"),
+            linkedinUrl: findBestMatch(headers, "linkedinUrl"),
+            industry:    findBestMatch(headers, "industry"),
+            seniority:   findBestMatch(headers, "seniority"),
+            department:  findBestMatch(headers, "department"),
+            phone:       findBestMatch(headers, "phone"),
+            website:     findBestMatch(headers, "website"),
+            location:    findBestMatch(headers, "location"),
+            timezone:    findBestMatch(headers, "timezone"),
           });
           setShowMappingConfig(true);
         },
@@ -361,12 +370,19 @@ export default function ProspectsPage() {
           setFileHeaders(headers);
           // Set mapping defaults
           setHeaderMappings({
-            email: findBestMatch(headers, "email"),
-            firstName: findBestMatch(headers, "firstName"),
-            lastName: findBestMatch(headers, "lastName"),
+            email:       findBestMatch(headers, "email"),
+            firstName:   findBestMatch(headers, "firstName"),
+            lastName:    findBestMatch(headers, "lastName"),
             companyName: findBestMatch(headers, "companyName"),
-            jobTitle: findBestMatch(headers, "jobTitle"),
-            linkedinUrl: findBestMatch(headers, "linkedinUrl")
+            jobTitle:    findBestMatch(headers, "jobTitle"),
+            linkedinUrl: findBestMatch(headers, "linkedinUrl"),
+            industry:    findBestMatch(headers, "industry"),
+            seniority:   findBestMatch(headers, "seniority"),
+            department:  findBestMatch(headers, "department"),
+            phone:       findBestMatch(headers, "phone"),
+            website:     findBestMatch(headers, "website"),
+            location:    findBestMatch(headers, "location"),
+            timezone:    findBestMatch(headers, "timezone"),
           });
           setShowMappingConfig(true);
         } catch (err) {
@@ -613,6 +629,76 @@ export default function ProspectsPage() {
                     placeholder="(Skip column)"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-industry" className="text-xs font-semibold text-foreground-secondary">Industry Column</Label>
+                  <SearchableSelect
+                    id="map-industry"
+                    options={fileHeaders}
+                    value={headerMappings.industry}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, industry: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-location" className="text-xs font-semibold text-foreground-secondary">Location Column</Label>
+                  <SearchableSelect
+                    id="map-location"
+                    options={fileHeaders}
+                    value={headerMappings.location}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, location: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-seniority" className="text-xs font-semibold text-foreground-secondary">Seniority Column</Label>
+                  <SearchableSelect
+                    id="map-seniority"
+                    options={fileHeaders}
+                    value={headerMappings.seniority}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, seniority: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-department" className="text-xs font-semibold text-foreground-secondary">Department Column</Label>
+                  <SearchableSelect
+                    id="map-department"
+                    options={fileHeaders}
+                    value={headerMappings.department}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, department: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-phone" className="text-xs font-semibold text-foreground-secondary">Phone Column</Label>
+                  <SearchableSelect
+                    id="map-phone"
+                    options={fileHeaders}
+                    value={headerMappings.phone}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, phone: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-website" className="text-xs font-semibold text-foreground-secondary">Website Column</Label>
+                  <SearchableSelect
+                    id="map-website"
+                    options={fileHeaders}
+                    value={headerMappings.website}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, website: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="map-timezone" className="text-xs font-semibold text-foreground-secondary">Timezone Column</Label>
+                  <SearchableSelect
+                    id="map-timezone"
+                    options={fileHeaders}
+                    value={headerMappings.timezone}
+                    onChange={(val) => setHeaderMappings({ ...headerMappings, timezone: val })}
+                    placeholder="(Skip column)"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-border">
@@ -725,6 +811,30 @@ export default function ProspectsPage() {
                 <div className="space-y-1.5">
                   <Label htmlFor="lead-linkedin">LinkedIn URL</Label>
                   <Input id="lead-linkedin" type="url" value={newLead.linkedinUrl} onChange={(e) => setNewLead({ ...newLead, linkedinUrl: e.target.value })} placeholder="https://linkedin.com/in/..." />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lead-industry">Industry</Label>
+                  <Input id="lead-industry" value={newLead.industry} onChange={(e) => setNewLead({ ...newLead, industry: e.target.value })} placeholder="Information Technology" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lead-location">Location</Label>
+                  <Input id="lead-location" value={newLead.location} onChange={(e) => setNewLead({ ...newLead, location: e.target.value })} placeholder="Bangalore, India" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lead-seniority">Seniority</Label>
+                  <Input id="lead-seniority" value={newLead.seniority} onChange={(e) => setNewLead({ ...newLead, seniority: e.target.value })} placeholder="Manager" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lead-department">Department</Label>
+                  <Input id="lead-department" value={newLead.department} onChange={(e) => setNewLead({ ...newLead, department: e.target.value })} placeholder="HR" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lead-phone">Phone</Label>
+                  <Input id="lead-phone" value={newLead.phone} onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })} placeholder="+91 98765 43210" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="lead-website">Website</Label>
+                  <Input id="lead-website" value={newLead.website} onChange={(e) => setNewLead({ ...newLead, website: e.target.value })} placeholder="https://company.com" />
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-2">

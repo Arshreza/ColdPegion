@@ -307,12 +307,19 @@ export function buildSidekickTools(ctx: SidekickContext) {
     add_prospect: tool({
       description: "Add a single prospect to a list (creates/updates the prospect).",
       inputSchema: z.object({
-        listName: z.string(),
-        email: z.string().describe("Prospect email address"),
-        firstName: z.string().optional(),
-        lastName: z.string().optional(),
+        listName:    z.string(),
+        email:       z.string().describe("Prospect email address"),
+        firstName:   z.string().optional(),
+        lastName:    z.string().optional(),
         companyName: z.string().optional(),
-        jobTitle: z.string().optional(),
+        jobTitle:    z.string().optional(),
+        industry:    z.string().optional(),
+        location:    z.string().optional(),
+        timezone:    z.string().optional(),
+        seniority:   z.string().optional(),
+        department:  z.string().optional(),
+        phone:       z.string().optional(),
+        website:     z.string().optional(),
       }),
       execute: async ({ listName, email, ...rest }) => {
         const list = await findList(listName);

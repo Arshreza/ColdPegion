@@ -360,6 +360,8 @@ model Prospect {
   industry          String?
   location          String?
   timezone          String?           // IANA tz (e.g. "America/New_York") for local-window sending
+  seniority         String?           // e.g. "Manager", "Director", "VP"
+  department        String?           // e.g. "HR", "Engineering", "Sales"
   customFields      String?           @db.Text
   source            String?
   isVerified        Boolean           @default(false)
@@ -377,6 +379,11 @@ model Prospect {
   preparedEmails      PreparedEmail[]
 
   @@unique([userId, email])
+  @@index([industry])
+  @@index([jobTitle])
+  @@index([location])
+  @@index([seniority])
+  @@index([department])
 }
 
 model ProspectListEntry {
@@ -663,7 +670,7 @@ model SuppressionEntry {
 
 model GlobalLead {
   id            String   @id @default(cuid())
-  email         String?
+  email         String?  @unique
   firstName     String?
   lastName      String?
   fullName      String?
@@ -693,7 +700,6 @@ model GlobalLead {
   @@index([companyName])
   @@index([country])
   @@index([headcount])
-  @@index([email])
 }
 
 // ==========================================
